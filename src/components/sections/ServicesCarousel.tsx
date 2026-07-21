@@ -16,26 +16,8 @@ const BASE_SPEED = 0.45;
 const MAX_SPEED = 4.5;
 const FRICTION = 0.965;
 const DRAG_CLICK_THRESHOLD = 6;
-const MOBILE_MQ = "(max-width: 1023px)";
-
-function useIsMobileCarousel() {
-  const [mobile, setMobile] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia(MOBILE_MQ).matches : true,
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia(MOBILE_MQ);
-    const sync = () => setMobile(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  return mobile;
-}
 
 export function ServicesCarousel() {
-  const isMobile = useIsMobileCarousel();
   const trackRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
@@ -54,7 +36,7 @@ export function ServicesCarousel() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const panelId = useId();
 
-  const items = isMobile ? services : [...services, ...services];
+  const loop = [...services, ...services];
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -75,14 +57,7 @@ export function ServicesCarousel() {
     }
   }, [expanded]);
 
-  // Auto-scroll + drag só no desktop
   useEffect(() => {
-    if (isMobile) {
-      const track = trackRef.current;
-      if (track) track.style.transform = "";
-      return;
-    }
-
     const track = trackRef.current;
     if (!track) return;
 
@@ -119,7 +94,7 @@ export function ServicesCarousel() {
 
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
-  }, [isMobile]);
+  }, []);
 
   useEffect(() => {
     if (!expanded) return;
@@ -131,7 +106,6 @@ export function ServicesCarousel() {
   }, [expanded]);
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (isMobile) return;
     if (event.button !== 0 || reducedMotionRef.current) return;
     draggingRef.current = true;
     axisRef.current = "none";
@@ -145,14 +119,15 @@ export function ServicesCarousel() {
   };
 
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (isMobile || !draggingRef.current) return;
+    if (!draggingRef.current) return;
 
     const dxTotal = event.clientX - startXRef.current;
     const dyTotal = event.clientY - startYRef.current;
 
+    // Decide eixo: vertical = scroll da página; horizontal = arrasta o carrossel
     if (axisRef.current === "none") {
-      if (Math.abs(dxTotal) < 8 && Math.abs(dyTotal) < 8) return;
-      if (Math.abs(dyTotal) > Math.abs(dxTotal)) {
+      if (Math.abs(dxTotal) < 10 && Math.abs(dyTotal) < 10) return;
+      if (Math.abs(dyTotal) >= Math.abs(dxTotal)) {
         axisRef.current = "y";
         draggingRef.current = false;
         return;
@@ -164,6 +139,7 @@ export function ServicesCarousel() {
     }
 
     if (axisRef.current !== "x") return;
+    event.preventDefault();
 
     const now = performance.now();
     const dx = event.clientX - lastXRef.current;
@@ -176,7 +152,6 @@ export function ServicesCarousel() {
   };
 
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (isMobile) return;
     if (!draggingRef.current && axisRef.current !== "x") {
       axisRef.current = "none";
       return;
@@ -223,50 +198,49 @@ export function ServicesCarousel() {
         </Reveal>
       </div>
 
-      <div
-        ref={viewportRef}
-        className={`services__viewport ${isMobile ? "is-native" : ""}`}
-        onPointerDown={isMobile ? undefined : onPointerDown}
-        onPointerMove={isMobile ? undefined : onPointerMove}
-        onPointerUp={isMobile ? undefined : endDrag}
-        onPointerCancel={isMobile ? undefined : endDrag}
-        onPointerLeave={
-          isMobile
-            ? undefined
-            : (event) => {
-                if (draggingRef.current || axisRef.current === "x") endDrag(event);
-              }
-        }
-      >
+      <div className="services__shell">
+        <div className="services__fade services__fade--left" aria-hidden="true" />
+        <div className="services__fade services__fade--right" aria-hidden="true" />
+
         <div
-          ref={trackRef}
-          className="services__track"
-          aria-label={
-            isMobile
-              ? "Lista de soluções. Deslize horizontalmente."
-              : "Lista de soluções em carrossel contínuo. Arraste para acelerar."
-          }
+          ref={viewportRef}
+          className="services__viewport"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onPointerLeave={(event) => {
+            if (draggingRef.current || axisRef.current === "x") endDrag(event);
+          }}
         >
-          {items.map((service, index) => {
-            const isClone = !isMobile && index >= services.length;
-            return (
-              <ServiceCard
-                key={`${service.id}-${index}`}
-                service={service}
-                expanded={!isClone && expanded === service.id}
-                panelId={panelId}
-                inert={isClone}
-                onToggle={() => {
-                  if (suppressClickRef.current) {
-                    suppressClickRef.current = false;
-                    return;
-                  }
-                  if (isClone) return;
-                  setExpanded((current) => (current === service.id ? null : service.id));
-                }}
-              />
-            );
-          })}
+          <div
+            ref={trackRef}
+            className="services__track"
+            aria-label="Lista de soluções em carrossel contínuo. Arraste na horizontal para acelerar."
+          >
+            {loop.map((service, index) => {
+              const isClone = index >= services.length;
+              return (
+                <ServiceCard
+                  key={`${service.id}-${index}`}
+                  service={service}
+                  expanded={!isClone && expanded === service.id}
+                  panelId={panelId}
+                  inert={isClone}
+                  onToggle={() => {
+                    if (suppressClickRef.current) {
+                      suppressClickRef.current = false;
+                      return;
+                    }
+                    if (isClone) return;
+                    setExpanded((current) =>
+                      current === service.id ? null : service.id,
+                    );
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
 
