@@ -1,0 +1,202 @@
+.contexts {
+  background: var(--paper);
+  padding: clamp(4.5rem, 9vw, 7rem) 0;
+}
+
+.contexts__title {
+  margin: 0 0 1.75rem;
+  font-size: clamp(1.9rem, 3.8vw, 2.8rem);
+  max-width: 14ch;
+}
+
+.contexts__grid {
+  display: grid;
+  column-gap: 1.25rem;
+  row-gap: 2.75rem;
+  padding-top: 1.5rem;
+}
+
+.contexts__card {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border-radius: 1.35rem;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 12px 32px rgba(8, 8, 8, 0.08);
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+
+.contexts__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(8, 8, 8, 0.12);
+}
+
+.contexts__media {
+  position: relative;
+  z-index: 1;
+  margin: -1.5rem 0.85rem 0;
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--ink);
+  box-shadow: 0 10px 28px rgba(8, 8, 8, 0.22);
+}
+
+.contexts__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 0.7s var(--ease);
+}
+
+.contexts__card:hover .contexts__media img {
+  transform: scale(1.06);
+}
+
+.contexts__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.contexts__card--corporate .contexts__media::after {
+  background: linear-gradient(145deg, rgba(91, 23, 214, 0.35), transparent 55%);
+}
+
+.contexts__card--brand .contexts__media::after {
+  background: linear-gradient(145deg, rgba(225, 29, 143, 0.32), rgba(255, 122, 47, 0.2));
+}
+
+.contexts__card--social .contexts__media::after {
+  background: linear-gradient(145deg, rgba(139, 92, 246, 0.28), transparent 60%);
+}
+
+.contexts__icon {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.7rem;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.contexts__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.25rem 1.25rem 1.4rem;
+}
+
+.contexts__body h3 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+  letter-spacing: -0.02em;
+}
+
+.contexts__body > p {
+  margin: 0.65rem 0 0;
+  color: #5c5852;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.contexts__features {
+  list-style: none;
+  margin: 1.15rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.contexts__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.contexts__check {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-top: 0.05rem;
+  border-radius: 999px;
+  color: var(--white);
+}
+
+.contexts__card--corporate .contexts__check {
+  background: var(--purple);
+}
+
+.contexts__card--brand .contexts__check {
+  background: var(--magenta);
+}
+
+.contexts__card--social .contexts__check {
+  background: var(--violet);
+}
+
+.contexts__cta {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-block-start: 1.35rem;
+  padding: 0.7rem 1.15rem;
+  border-radius: 0.65rem;
+  color: var(--white);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: filter 0.25s ease, transform 0.25s var(--ease);
+}
+
+.contexts__card--corporate .contexts__cta {
+  background: linear-gradient(90deg, #6d28e8, var(--purple-deep));
+}
+
+.contexts__card--brand .contexts__cta {
+  background: linear-gradient(90deg, var(--magenta), #b01570);
+}
+
+.contexts__card--social .contexts__cta {
+  background: linear-gradient(90deg, var(--violet), #6d28d9);
+}
+
+.contexts__cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.contexts__cta:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .contexts__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .contexts__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

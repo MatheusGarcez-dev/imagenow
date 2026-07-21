@@ -1,0 +1,123 @@
+.about-page {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.about-page__hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: clamp(7rem, 14vw, 9rem) 0 3.5rem;
+}
+
+.about-page__crumbs {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.about-page__crumbs a:hover {
+  color: #fff;
+}
+
+.about-page__eyebrow {
+  margin: 1.5rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 222, 0.9);
+}
+
+.about-page__hero h1 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(2.6rem, 7vw, 4.5rem);
+}
+
+.about-page__subtitle {
+  margin: 0.75rem 0 0;
+  font-size: 1.2rem;
+  color: rgba(245, 244, 240, 0.7);
+}
+
+.about-page__layout {
+  display: grid;
+  gap: 2.5rem;
+  padding-block: clamp(3rem, 7vw, 5rem);
+}
+
+.about-page__aside {
+  display: none;
+}
+
+.about-page__aside ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+  position: sticky;
+  top: 6rem;
+}
+
+.about-page__aside li {
+  font-size: 0.92rem;
+  color: #6a655e;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(8, 8, 8, 0.08);
+}
+
+.about-page__body {
+  max-width: 68ch;
+}
+
+.about-page__body p {
+  margin: 0 0 1.15rem;
+  color: #3f3c38;
+  font-size: 1.08rem;
+}
+
+.about-page__lead {
+  font-size: clamp(1.2rem, 2.2vw, 1.4rem) !important;
+  color: var(--ink) !important;
+  font-weight: 500;
+}
+
+.about-page__signature {
+  margin: 2rem 0 !important;
+  font-size: 1.6rem !important;
+  color: var(--magenta) !important;
+}
+
+.about-page__media {
+  margin: 2.5rem 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+}
+
+.about-page__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.about-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .about-page__layout {
+    grid-template-columns: 220px 1fr;
+    gap: 4rem;
+  }
+
+  .about-page__aside {
+    display: block;
+  }
+}
