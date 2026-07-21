@@ -52,6 +52,7 @@ export function ScrollReveal({
     () => {
       const el = containerRef.current;
       if (!el || reduced) return;
+      if (window.matchMedia("(max-width: 1023px)").matches) return;
 
       const scroller =
         scrollContainerRef?.current && scrollContainerRef.current

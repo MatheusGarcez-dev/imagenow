@@ -31,16 +31,20 @@ type RevealProps = {
 
 const VARIANT_FROM: Record<
   RevealVariant,
-  { y?: number; x?: number; scale?: number; blur: number; opacity: number }
+  { y?: number; x?: number; scale?: number; blur: number }
 > = {
-  "fade-up": { y: 36, blur: 10, opacity: 0 },
-  "fade-down": { y: -28, blur: 8, opacity: 0 },
-  "fade-left": { x: 40, blur: 12, opacity: 0 },
-  "fade-right": { x: -40, blur: 12, opacity: 0 },
-  "fade-blur": { y: 18, blur: 16, opacity: 0 },
-  "scale-blur": { y: 24, scale: 0.96, blur: 14, opacity: 0 },
-  soft: { y: 20, blur: 6, opacity: 0 },
+  "fade-up": { y: 28, blur: 8 },
+  "fade-down": { y: -20, blur: 6 },
+  "fade-left": { x: 28, blur: 8 },
+  "fade-right": { x: -28, blur: 8 },
+  "fade-blur": { y: 16, blur: 12 },
+  "scale-blur": { y: 20, scale: 0.97, blur: 10 },
+  soft: { y: 16, blur: 4 },
 };
+
+function isMobileViewport() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches;
+}
 
 export function Reveal({
   children,
@@ -51,7 +55,7 @@ export function Reveal({
   blur,
   y,
   x,
-  start = "top 88%",
+  start = "top 90%",
   once = true,
   style,
 }: RevealProps) {
@@ -64,31 +68,43 @@ export function Reveal({
       if (!el) return;
 
       if (reduced) {
-        gsap.set(el, { clearProps: "all", autoAlpha: 1, filter: "none" });
+        gsap.set(el, { clearProps: "all", autoAlpha: 1 });
         return;
       }
 
+      const mobile = isMobileViewport();
       const preset = VARIANT_FROM[variant];
-      const fromBlur = blur ?? preset.blur;
+
+      // Mobile: sem animação de entrada — prioriza scroll fluido no iOS
+      if (mobile) {
+        gsap.set(el, { clearProps: "all", autoAlpha: 1 });
+        return;
+      }
+
+      const useBlur = (blur ?? preset.blur) > 0;
+      const fromBlur = useBlur ? (blur ?? preset.blur) : 0;
+      const moveY = y ?? preset.y ?? 0;
+      const moveX = x ?? preset.x ?? 0;
 
       gsap.fromTo(
         el,
         {
           autoAlpha: 0,
-          y: y ?? preset.y ?? 0,
-          x: x ?? preset.x ?? 0,
-          scale: preset.scale ?? 1,
-          filter: `blur(${fromBlur}px)`,
+          y: moveY,
+          x: moveX,
+          scale: mobile ? 1 : (preset.scale ?? 1),
+          ...(useBlur ? { filter: `blur(${fromBlur}px)` } : {}),
         },
         {
           autoAlpha: 1,
           y: 0,
           x: 0,
           scale: 1,
-          filter: "blur(0px)",
-          duration,
+          ...(useBlur ? { filter: "blur(0px)" } : {}),
+          duration: mobile ? Math.min(duration, 0.7) : duration,
           delay,
-          ease: "power3.out",
+          ease: "power2.out",
+          clearProps: "filter,transform",
           scrollTrigger: {
             trigger: el,
             start,
@@ -107,7 +123,7 @@ export function Reveal({
     <div
       ref={ref}
       className={`reveal ${className}`.trim()}
-      style={{ visibility: reduced ? undefined : "hidden", ...style }}
+      style={style}
     >
       {children}
     </div>
@@ -134,7 +150,7 @@ export function RevealStagger({
   stagger = 0.09,
   delay = 0,
   duration = 0.95,
-  start = "top 90%",
+  start = "top 92%",
   once = true,
 }: RevealStaggerProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -152,11 +168,17 @@ export function RevealStagger({
       if (!items.length) return;
 
       if (reduced) {
-        gsap.set(items, { clearProps: "all", autoAlpha: 1, filter: "none" });
+        gsap.set(items, { clearProps: "all", autoAlpha: 1 });
+        return;
+      }
+
+      if (isMobileViewport()) {
+        gsap.set(items, { clearProps: "all", autoAlpha: 1 });
         return;
       }
 
       const preset = VARIANT_FROM[variant];
+      const useBlur = preset.blur > 0;
 
       gsap.fromTo(
         items,
@@ -165,18 +187,19 @@ export function RevealStagger({
           y: preset.y ?? 0,
           x: preset.x ?? 0,
           scale: preset.scale ?? 1,
-          filter: `blur(${preset.blur}px)`,
+          ...(useBlur ? { filter: `blur(${preset.blur}px)` } : {}),
         },
         {
           autoAlpha: 1,
           y: 0,
           x: 0,
           scale: 1,
-          filter: "blur(0px)",
+          ...(useBlur ? { filter: "blur(0px)" } : {}),
           duration,
           delay,
           stagger,
-          ease: "power3.out",
+          ease: "power2.out",
+          clearProps: "filter,transform",
           scrollTrigger: {
             trigger: el,
             start,

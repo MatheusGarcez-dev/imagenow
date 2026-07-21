@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { X } from "lucide-react";
-import { navLinks, messages, siteConfig } from "@/data/site";
+import { navLinks, messages } from "@/data/site";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import "./Header.css";
@@ -48,7 +47,6 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const menuId = useId();
-  const closeRef = useRef<HTMLButtonElement>(null);
   const openRef = useRef<HTMLButtonElement>(null);
   const wasSticky = useRef(false);
 
@@ -56,17 +54,23 @@ export function Header() {
     let formTimer = 0;
     let primed = false;
     const onScroll = () => {
-      const next = window.scrollY > 32;
+      const y = window.scrollY || document.documentElement.scrollTop;
+      const next = y > 24;
       if (!primed) {
         primed = true;
         wasSticky.current = next;
         setSticky(next);
         return;
       }
-      if (next && !wasSticky.current) {
+      const canForm =
+        next &&
+        !wasSticky.current &&
+        window.matchMedia("(min-width: 1024px)").matches &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (canForm) {
         setForming(true);
         window.clearTimeout(formTimer);
-        formTimer = window.setTimeout(() => setForming(false), 600);
+        formTimer = window.setTimeout(() => setForming(false), 550);
       }
       wasSticky.current = next;
       setSticky(next);
@@ -85,20 +89,11 @@ export function Header() {
 
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
-    const openButton = openRef.current;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
-
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
     window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = previous;
-      window.removeEventListener("keydown", onKey);
-      openButton?.focus();
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   return (
@@ -154,53 +149,43 @@ export function Header() {
       <div
         id={menuId}
         className={`mobile-menu ${open ? "is-open" : ""}`}
-        hidden={!open}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu de navegação"
+        aria-hidden={!open}
+        inert={!open ? true : undefined}
       >
-        <div className="mobile-menu__top">
-          <Link to="/" className="site-header__logo" onClick={() => setOpen(false)}>
-            <img
-              src="/images/logo-imagenow.png"
-              alt=""
-              width={148}
-              height={34}
-              decoding="async"
-            />
-          </Link>
-          <button
-            ref={closeRef}
-            type="button"
-            className="mobile-menu__close"
-            aria-label="Fechar menu"
-            onClick={() => setOpen(false)}
-          >
-            <X size={22} strokeWidth={1.75} />
-          </button>
-        </div>
-
-        <nav className="mobile-menu__nav" aria-label="Mobile">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.href}
-              href={link.href}
-              label={link.label}
-              onNavigate={() => setOpen(false)}
-            />
-          ))}
-        </nav>
-
-        <div className="mobile-menu__footer">
-          <AnimatedButton
-            href={createWhatsAppUrl(messages.proposta)}
-            external
-            variant="primary"
-            aria-label="Solicitar proposta pelo WhatsApp"
-          >
-            Solicitar proposta
-          </AnimatedButton>
-          <p className="mobile-menu__meta">{siteConfig.tagline}</p>
+        <button
+          type="button"
+          className="mobile-menu__backdrop"
+          aria-label="Fechar menu"
+          tabIndex={open ? 0 : -1}
+          onClick={() => setOpen(false)}
+        />
+        <div
+          className="mobile-menu__panel"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu de navegação"
+        >
+          <nav className="mobile-menu__nav" aria-label="Mobile">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                onNavigate={() => setOpen(false)}
+              />
+            ))}
+          </nav>
+          <div className="mobile-menu__footer">
+            <AnimatedButton
+              href={createWhatsAppUrl(messages.proposta)}
+              external
+              variant="primary"
+              className="mobile-menu__cta"
+              aria-label="Solicitar proposta pelo WhatsApp"
+            >
+              Solicitar proposta
+            </AnimatedButton>
+          </div>
         </div>
       </div>
     </>

@@ -55,8 +55,14 @@
 }
 
 html {
+  /* Não usar overflow-x no html+body juntos — quebra scroll no iOS */
   scroll-behavior: smooth;
-  overflow-x: clip;
+}
+
+@media (max-width: 1023px) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 html.lenis,
@@ -80,6 +86,31 @@ body {
   overflow-x: clip;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--magenta) 55%, var(--ink)) transparent;
+}
+
+@media (max-width: 1023px) {
+  body {
+    overflow-x: visible;
+    overflow-y: auto;
+    position: static;
+    height: auto;
+    min-height: 100%;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #root {
+    overflow: visible;
+    min-height: 100%;
+  }
+
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    filter: none !important;
+  }
 }
 
 /* Scrollbar — WebKit / Chromium / Safari */
@@ -196,8 +227,10 @@ button {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .reveal-stagger > *:not(.reveal) {
-    opacity: 0;
+  @media (min-width: 1024px) {
+    .reveal-stagger > *:not(.reveal) {
+      opacity: 0;
+    }
   }
 }
 

@@ -1,7 +1,6 @@
 import { ArrowRight, Briefcase, Check, Heart, Sparkles } from "lucide-react";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { contexts } from "@/data/services";
-import { Reveal, RevealStagger } from "@/components/ui/Reveal";
 import "./ContextCardsSection.css";
 
 const toneIcons = {
@@ -14,18 +13,10 @@ export function ContextCardsSection() {
   return (
     <section className="contexts" aria-labelledby="contexts-title">
       <div className="wrap">
-        <Reveal variant="fade-blur">
-          <h2 id="contexts-title" className="font-display contexts__title">
-            Contextos em que a Imagenow atua
-          </h2>
-        </Reveal>
-        <RevealStagger
-          className="contexts__grid"
-          childSelector=".contexts__card"
-          variant="fade-up"
-          stagger={0.14}
-          duration={1}
-        >
+        <h2 id="contexts-title" className="font-display contexts__title">
+          Contextos em que a Imagenow atua
+        </h2>
+        <div className="contexts__grid">
           {contexts.map((item) => {
             const Icon = toneIcons[item.tone];
 
@@ -74,7 +65,7 @@ export function ContextCardsSection() {
               </article>
             );
           })}
-        </RevealStagger>
+        </div>
       </div>
     </section>
   );

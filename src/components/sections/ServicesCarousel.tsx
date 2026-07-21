@@ -16,8 +16,26 @@ const BASE_SPEED = 0.45;
 const MAX_SPEED = 4.5;
 const FRICTION = 0.965;
 const DRAG_CLICK_THRESHOLD = 6;
+const MOBILE_MQ = "(max-width: 1023px)";
+
+function useIsMobileCarousel() {
+  const [mobile, setMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(MOBILE_MQ).matches : true,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_MQ);
+    const sync = () => setMobile(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  return mobile;
+}
 
 export function ServicesCarousel() {
+  const isMobile = useIsMobileCarousel();
   const trackRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
@@ -29,11 +47,14 @@ export function ServicesCarousel() {
   const suppressClickRef = useRef(false);
   const pausedRef = useRef(false);
   const reducedMotionRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const axisRef = useRef<"none" | "x" | "y">("none");
 
   const [expanded, setExpanded] = useState<string | null>(null);
   const panelId = useId();
 
-  const loop = [...services, ...services];
+  const items = isMobile ? services : [...services, ...services];
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -54,7 +75,14 @@ export function ServicesCarousel() {
     }
   }, [expanded]);
 
+  // Auto-scroll + drag só no desktop
   useEffect(() => {
+    if (isMobile) {
+      const track = trackRef.current;
+      if (track) track.style.transform = "";
+      return;
+    }
+
     const track = trackRef.current;
     if (!track) return;
 
@@ -86,13 +114,12 @@ export function ServicesCarousel() {
 
       wrapOffset();
       track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
-
       frame = window.requestAnimationFrame(tick);
     };
 
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     if (!expanded) return;
@@ -104,18 +131,40 @@ export function ServicesCarousel() {
   }, [expanded]);
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     if (event.button !== 0 || reducedMotionRef.current) return;
     draggingRef.current = true;
+    axisRef.current = "none";
     dragDistanceRef.current = 0;
     suppressClickRef.current = false;
+    startXRef.current = event.clientX;
+    startYRef.current = event.clientY;
     lastXRef.current = event.clientX;
     lastTRef.current = performance.now();
     velocityRef.current = 0;
-    viewportRef.current?.setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current) return;
+    if (isMobile || !draggingRef.current) return;
+
+    const dxTotal = event.clientX - startXRef.current;
+    const dyTotal = event.clientY - startYRef.current;
+
+    if (axisRef.current === "none") {
+      if (Math.abs(dxTotal) < 8 && Math.abs(dyTotal) < 8) return;
+      if (Math.abs(dyTotal) > Math.abs(dxTotal)) {
+        axisRef.current = "y";
+        draggingRef.current = false;
+        return;
+      }
+      axisRef.current = "x";
+      viewportRef.current?.setPointerCapture(event.pointerId);
+      lastXRef.current = event.clientX;
+      lastTRef.current = performance.now();
+    }
+
+    if (axisRef.current !== "x") return;
+
     const now = performance.now();
     const dx = event.clientX - lastXRef.current;
     const dt = Math.max(now - lastTRef.current, 1);
@@ -127,8 +176,16 @@ export function ServicesCarousel() {
   };
 
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current) return;
+    if (isMobile) return;
+    if (!draggingRef.current && axisRef.current !== "x") {
+      axisRef.current = "none";
+      return;
+    }
+    const wasHorizontal = axisRef.current === "x";
     draggingRef.current = false;
+    axisRef.current = "none";
+    if (!wasHorizontal) return;
+
     if (dragDistanceRef.current > DRAG_CLICK_THRESHOLD) {
       suppressClickRef.current = true;
     }
@@ -166,25 +223,32 @@ export function ServicesCarousel() {
         </Reveal>
       </div>
 
-      <Reveal variant="soft" delay={0.1} blur={8}>
       <div
         ref={viewportRef}
-        className="services__viewport"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={(event) => {
-          if (draggingRef.current) endDrag(event);
-        }}
+        className={`services__viewport ${isMobile ? "is-native" : ""}`}
+        onPointerDown={isMobile ? undefined : onPointerDown}
+        onPointerMove={isMobile ? undefined : onPointerMove}
+        onPointerUp={isMobile ? undefined : endDrag}
+        onPointerCancel={isMobile ? undefined : endDrag}
+        onPointerLeave={
+          isMobile
+            ? undefined
+            : (event) => {
+                if (draggingRef.current || axisRef.current === "x") endDrag(event);
+              }
+        }
       >
         <div
           ref={trackRef}
           className="services__track"
-          aria-label="Lista de soluções em carrossel contínuo. Arraste para acelerar."
+          aria-label={
+            isMobile
+              ? "Lista de soluções. Deslize horizontalmente."
+              : "Lista de soluções em carrossel contínuo. Arraste para acelerar."
+          }
         >
-          {loop.map((service, index) => {
-            const isClone = index >= services.length;
+          {items.map((service, index) => {
+            const isClone = !isMobile && index >= services.length;
             return (
               <ServiceCard
                 key={`${service.id}-${index}`}
@@ -205,7 +269,6 @@ export function ServicesCarousel() {
           })}
         </div>
       </div>
-      </Reveal>
 
       <div
         id={panelId}
