@@ -46,16 +46,15 @@
 .contexts__media {
   position: relative;
   z-index: 1;
-  margin: -1.5rem 0.85rem 0;
-  width: auto;
-  aspect-ratio: 16 / 11;
+  /* Largura explícita: max-height + aspect-ratio encolhia a caixa no iOS */
+  width: calc(100% - 1.2rem);
+  margin: -1.35rem 0.6rem 0;
+  aspect-ratio: 16 / 10;
   height: auto;
-  max-height: 14rem;
   overflow: hidden;
   border-radius: 1rem;
   background: var(--ink);
   box-shadow: 0 10px 28px rgba(8, 8, 8, 0.22);
-  /* Impede a imagem intrínseca de estourar a altura no iOS Safari */
   contain: layout;
 }
 
@@ -226,10 +225,9 @@
   }
 
   .contexts__media {
-    /* Evita overflow horizontal do margin negativo no mobile */
-    margin: -1.15rem 0.7rem 0;
+    width: calc(100% - 1rem);
+    margin: -1.1rem 0.5rem 0;
     aspect-ratio: 16 / 10;
-    max-height: 11.5rem;
     border-radius: 0.9rem;
   }
 
