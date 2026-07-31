@@ -1,5 +1,10 @@
 import { Star } from "lucide-react";
-import { testimonials } from "@/data/testimonials";
+import {
+  googleRatingSummary,
+  googleReviewsUrl,
+  testimonials,
+} from "@/data/testimonials";
+import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { Reveal } from "@/components/ui/Reveal";
 import "./SocialProofSection.css";
 
@@ -26,18 +31,25 @@ export function SocialProofSection() {
     <section className="social-proof" aria-labelledby="social-proof-title">
       <div className="wrap">
         <Reveal variant="fade-blur" className="social-proof__header">
+          <p className="social-proof__rating">
+            <span className="social-proof__rating-score">{googleRatingSummary.rating.toFixed(1)}</span>
+            <RatingStars rating={5} label="5 de 5 estrelas no Google" />
+            <span className="social-proof__rating-meta">
+              no Google · {googleRatingSummary.countLabel} avaliações
+            </span>
+          </p>
           <h2 id="social-proof-title" className="font-display">
             Confiança construída em eventos reais.
           </h2>
           <p className="social-proof__note">
-            Feedbacks de quem já integrou a Imagenow à operação do evento.
+            Avaliações reais de quem já levou a Imagenow para o evento.
           </p>
         </Reveal>
 
         <Reveal variant="soft" delay={0.12} className="social-proof__card">
-          <h3 className="sr-only">Depoimentos de clientes</h3>
+          <h3 className="sr-only">Depoimentos de clientes no Google</h3>
           <div className="feedback-marquee">
-            <ul className="feedback-marquee__track" aria-label="Depoimentos em carrossel">
+            <ul className="feedback-marquee__track" aria-label="Avaliações do Google">
               {loop.map((item, index) => {
                 const isClone = index >= testimonials.length;
                 return (
@@ -54,6 +66,7 @@ export function SocialProofSection() {
                       <p>“{item.quote}”</p>
                       <footer>
                         <span className="feedback-marquee__name">{item.name}</span>
+                        <span className="feedback-marquee__source">Google</span>
                       </footer>
                     </blockquote>
                   </li>
@@ -61,6 +74,18 @@ export function SocialProofSection() {
               })}
             </ul>
           </div>
+        </Reveal>
+
+        <Reveal variant="fade-up" delay={0.16} className="social-proof__cta">
+          <AnimatedButton
+            href={googleReviewsUrl}
+            external
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="outline"
+          >
+            Ver mais avaliações no Google
+          </AnimatedButton>
         </Reveal>
       </div>
     </section>

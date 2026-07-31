@@ -35,43 +35,14 @@ export const brands = [
   "Braschemical",
 ] as const;
 
-/** Simple Icons slugs when available; null = styled wordmark */
-export const brandIcons: Record<string, string | null> = {
-  Adidas: "adidas",
-  "Itaú": null,
-  Lacoste: "lacoste",
-  CAIXA: null,
-  "Levi's": "levis",
-  LATAM: null,
-  Havaianas: null,
-  "Smart Fit": null,
-  Pringles: "pringles",
-  Stellantis: "stellantis",
-  "Cacau Show": null,
-  POSCA: null,
-  Dasa: null,
-  "Saint-Gobain": "saintgobain",
-  Dexco: null,
-  Gafisa: null,
-  EZTEC: null,
-  "Coco Bambu": null,
-  "Banco Fibra": null,
-  "Ri Happy": null,
-  Worldpay: "worldpay",
-  "Pura Vida": null,
-  "Cubo Itaú": null,
-  "St. Paul's School": null,
-  Lysoform: null,
-  "Conta Simples": null,
-  Piet: null,
-  Yázigi: null,
-  "Colégio Objetivo": null,
-  MPD: null,
-  Taboca: null,
-  Alphaquip: null,
-  Rotary: "rotaryinternational",
-  Braschemical: null,
-};
+export type BrandName = (typeof brands)[number];
+
+/** Logos em /public/images/logos/{n}.png — ordem igual à lista `brands` */
+export function brandLogo(brand: BrandName) {
+  const index = brands.indexOf(brand);
+  const n = index >= 0 ? index + 1 : 1;
+  return `/images/logos/${n}.png`;
+}
 
 export function brandAlt(name: string) {
   const isEmpresa =

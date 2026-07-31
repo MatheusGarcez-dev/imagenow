@@ -101,6 +101,18 @@
   gap: 0.45rem;
 }
 
+.site-footer__heading--social {
+  margin-top: 1.5rem;
+}
+
+.site-footer__socials {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
 .site-footer__bottom {
   display: flex;
   flex-direction: column;

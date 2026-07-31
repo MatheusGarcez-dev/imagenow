@@ -1,73 +1,49 @@
-import { ArrowRight, Briefcase, Check, Heart, Sparkles } from "lucide-react";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { contexts } from "@/data/services";
+import { Reveal } from "@/components/ui/Reveal";
 import "./ContextCardsSection.css";
-
-const toneIcons = {
-  corporate: Briefcase,
-  brand: Sparkles,
-  social: Heart,
-} as const;
 
 export function ContextCardsSection() {
   return (
     <section className="contexts" aria-labelledby="contexts-title">
       <div className="wrap">
-        <h2 id="contexts-title" className="font-display contexts__title">
-          Contextos em que a Imagenow atua
-        </h2>
-        <div className="contexts__grid">
-          {contexts.map((item) => {
-            const Icon = toneIcons[item.tone];
+        <Reveal variant="fade-up" className="contexts__header">
+          <h2 id="contexts-title" className="font-display contexts__title">
+            Contextos em que a Imagenow atua
+          </h2>
+        </Reveal>
+      </div>
 
-            return (
-              <article
-                key={item.id}
-                className={`contexts__card contexts__card--${item.tone}`}
-              >
-                <div className="contexts__media">
-                  <img
-                    src={item.image}
-                    alt={item.imageAlt}
-                    width={640}
-                    height={400}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span className="contexts__icon" aria-hidden="true">
-                    <Icon size={20} strokeWidth={2} />
-                  </span>
-                </div>
-
-                <div className="contexts__body">
-                  <h3 className="font-display">{item.title}</h3>
-                  <p>{item.text}</p>
-
-                  <ul className="contexts__features">
-                    {item.features.map((feature) => (
-                      <li key={feature}>
-                        <span className="contexts__check" aria-hidden="true">
-                          <Check size={14} strokeWidth={2.5} />
-                        </span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <a
-                    className="contexts__cta"
-                    href={createWhatsAppUrl(item.whatsappMessage)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Saiba mais
-                    <ArrowRight size={16} strokeWidth={2.25} aria-hidden="true" />
-                  </a>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+      <div className="contexts__grid" role="list">
+        {contexts.map((item) => (
+          <a
+            key={item.id}
+            role="listitem"
+            href={createWhatsAppUrl(item.whatsappMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`contexts__panel contexts__panel--${item.tone}`}
+            aria-label={`${item.title}. ${item.text} Abrir conversa no WhatsApp.`}
+          >
+            <div className="contexts__media" aria-hidden="true">
+              <img
+                src={item.image}
+                alt=""
+                width={900}
+                height={1200}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="contexts__scrim" aria-hidden="true" />
+            <div className="contexts__copy">
+              <h3 className="font-display contexts__panel-title">{item.title}</h3>
+              <div className="contexts__panel-text-wrap">
+                <p className="contexts__panel-text">{item.text}</p>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
     </section>
   );

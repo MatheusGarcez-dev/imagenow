@@ -14,7 +14,11 @@ export function PartnershipsSection() {
   return (
     <section id="parcerias" className="partnerships" aria-labelledby="partnerships-title">
       <div className="wrap">
-        <Reveal variant="fade-blur" duration={1.15} className="partnerships__hero">
+        <Reveal
+          variant="fade-blur"
+          duration={1.15}
+          className={`partnerships__hero${open ? " is-open" : ""}`}
+        >
           <div className="partnerships__aurora">
             <Aurora
               colorStops={["#EC4899", "#EF4444", "#7C3AED"]}
@@ -41,46 +45,49 @@ export function PartnershipsSection() {
                 {open ? "Recolher" : "Entenda como funciona"}
               </AnimatedButton>
             </div>
+
+            <div
+              id={panelId}
+              className="partnerships__expand"
+              hidden={!open}
+              role="region"
+              aria-label="Como funciona a parceria"
+            >
+              <div className="partnerships__expand-inner">
+                <h3 className="font-display">Integração estratégica</h3>
+                <p className="partnerships__sub">
+                  Para espaços, produtoras e empresas que buscam ampliar sua entrega
+                </p>
+                <div className="partnerships__copy">
+                  {partnershipsContent.intro.map((paragraph) => (
+                    <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+                  ))}
+                </div>
+                <h3 className="font-display partnerships__points-title">
+                  Pontos principais da parceria
+                </h3>
+                <ul className="partnerships__points">
+                  {partnershipsContent.points.map((point) => (
+                    <li key={point.title}>
+                      <h4>{point.title}</h4>
+                      <p>{point.text}</p>
+                    </li>
+                  ))}
+                </ul>
+                <AnimatedButton
+                  href={createWhatsAppUrl(messages.parceria)}
+                  external
+                  variant="primary"
+                  className="partnerships__cta"
+                  aria-label="Conversar sobre parceria no WhatsApp"
+                >
+                  Conversar sobre parceria
+                </AnimatedButton>
+              </div>
+            </div>
           </div>
         </Reveal>
 
-        <div
-          id={panelId}
-          className={`partnerships__panel ${open ? "is-open" : ""}`}
-          hidden={!open}
-        >
-          <h3 className="font-display">Integração estratégica</h3>
-          <p className="partnerships__sub">
-            Para espaços, produtoras e empresas que buscam ampliar sua entrega
-          </p>
-          <div className="partnerships__copy">
-            {partnershipsContent.intro.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
-            ))}
-          </div>
-          <h3 className="font-display partnerships__points-title">
-            Pontos principais da parceria
-          </h3>
-          <ul className="partnerships__points">
-            {partnershipsContent.points.map((point) => (
-              <li key={point.title}>
-                <h4>{point.title}</h4>
-                <p>{point.text}</p>
-              </li>
-            ))}
-          </ul>
-          <AnimatedButton
-            href={createWhatsAppUrl(messages.parceria)}
-            external
-            variant="dark"
-            className="mt-8"
-            aria-label="Conversar sobre parceria no WhatsApp"
-          >
-            Conversar sobre parceria
-          </AnimatedButton>
-        </div>
-
-        {/* Conteúdo sempre no DOM para SEO */}
         <div className="sr-only" aria-hidden={open || undefined}>
           <h3>Integração estratégica</h3>
           {partnershipsContent.intro.map((paragraph) => (

@@ -1,306 +1,110 @@
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
-import { X } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { services, type Service } from "@/data/services";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
-import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { Reveal } from "@/components/ui/Reveal";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import "./ServicesCarousel.css";
 
-const BASE_SPEED = 0.45;
-const MAX_SPEED = 4.5;
-const FRICTION = 0.965;
-const DRAG_CLICK_THRESHOLD = 6;
+gsap.registerPlugin(useGSAP);
+
+function padIndex(index: number) {
+  return String(index + 1).padStart(2, "0");
+}
 
 export function ServicesCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
-  const velocityRef = useRef(BASE_SPEED);
-  const draggingRef = useRef(false);
-  const lastXRef = useRef(0);
-  const lastTRef = useRef(0);
-  const dragDistanceRef = useRef(0);
-  const suppressClickRef = useRef(false);
-  const pausedRef = useRef(false);
-  const reducedMotionRef = useRef(false);
-  const startXRef = useRef(0);
-  const startYRef = useRef(0);
-  const axisRef = useRef<"none" | "x" | "y">("none");
-
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
   const panelId = useId();
 
-  const loop = [...services, ...services];
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => {
-      reducedMotionRef.current = media.matches;
-      if (media.matches) velocityRef.current = 0;
-      else if (!draggingRef.current) velocityRef.current = BASE_SPEED;
-    };
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
+  const updateArrows = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setCanPrev(el.scrollLeft > 8);
+    setCanNext(el.scrollLeft < max - 8);
   }, []);
 
   useEffect(() => {
-    pausedRef.current = Boolean(expanded);
-    if (!expanded && !reducedMotionRef.current && !draggingRef.current) {
-      velocityRef.current = BASE_SPEED;
-    }
-  }, [expanded]);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    let frame = 0;
-
-    const wrapOffset = () => {
-      const half = track.scrollWidth / 2;
-      if (half <= 0) return;
-      while (offsetRef.current <= -half) offsetRef.current += half;
-      while (offsetRef.current > 0) offsetRef.current -= half;
+    const el = trackRef.current;
+    if (!el) return;
+    updateArrows();
+    el.addEventListener("scroll", updateArrows, { passive: true });
+    window.addEventListener("resize", updateArrows);
+    return () => {
+      el.removeEventListener("scroll", updateArrows);
+      window.removeEventListener("resize", updateArrows);
     };
+  }, [updateArrows, expanded]);
 
-    const tick = () => {
-      if (reducedMotionRef.current) {
-        frame = window.requestAnimationFrame(tick);
-        return;
-      }
-
-      if (!draggingRef.current && !pausedRef.current) {
-        const current = velocityRef.current;
-        const next = current + (BASE_SPEED - current) * (1 - FRICTION);
-        velocityRef.current = Math.min(MAX_SPEED, Math.max(BASE_SPEED * 0.35, next));
-        offsetRef.current -= velocityRef.current;
-      } else if (!draggingRef.current && Math.abs(velocityRef.current) > 0.02) {
-        velocityRef.current *= FRICTION;
-        offsetRef.current -= velocityRef.current;
-        if (Math.abs(velocityRef.current) < 0.02) velocityRef.current = 0;
-      }
-
-      wrapOffset();
-      track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
-      frame = window.requestAnimationFrame(tick);
-    };
-
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  useEffect(() => {
-    if (!expanded) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setExpanded(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [expanded]);
-
-  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || reducedMotionRef.current) return;
-    draggingRef.current = true;
-    axisRef.current = "none";
-    dragDistanceRef.current = 0;
-    suppressClickRef.current = false;
-    startXRef.current = event.clientX;
-    startYRef.current = event.clientY;
-    lastXRef.current = event.clientX;
-    lastTRef.current = performance.now();
-    velocityRef.current = 0;
+  const scrollByCard = (direction: -1 | 1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>(".service-card");
+    const step = card ? card.offsetWidth + 0 : el.clientWidth * 0.75;
+    el.scrollBy({ left: direction * step, behavior: "smooth" });
   };
-
-  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current) return;
-
-    const dxTotal = event.clientX - startXRef.current;
-    const dyTotal = event.clientY - startYRef.current;
-
-    // Decide eixo: vertical = scroll da página; horizontal = arrasta o carrossel
-    if (axisRef.current === "none") {
-      if (Math.abs(dxTotal) < 10 && Math.abs(dyTotal) < 10) return;
-      if (Math.abs(dyTotal) >= Math.abs(dxTotal)) {
-        axisRef.current = "y";
-        draggingRef.current = false;
-        return;
-      }
-      axisRef.current = "x";
-      viewportRef.current?.setPointerCapture(event.pointerId);
-      lastXRef.current = event.clientX;
-      lastTRef.current = performance.now();
-    }
-
-    if (axisRef.current !== "x") return;
-    event.preventDefault();
-
-    const now = performance.now();
-    const dx = event.clientX - lastXRef.current;
-    const dt = Math.max(now - lastTRef.current, 1);
-    offsetRef.current += dx;
-    dragDistanceRef.current += Math.abs(dx);
-    velocityRef.current = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, (-dx / dt) * 16));
-    lastXRef.current = event.clientX;
-    lastTRef.current = now;
-  };
-
-  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current && axisRef.current !== "x") {
-      axisRef.current = "none";
-      return;
-    }
-    const wasHorizontal = axisRef.current === "x";
-    draggingRef.current = false;
-    axisRef.current = "none";
-    if (!wasHorizontal) return;
-
-    if (dragDistanceRef.current > DRAG_CLICK_THRESHOLD) {
-      suppressClickRef.current = true;
-    }
-    if (!reducedMotionRef.current && !pausedRef.current) {
-      const abs = Math.abs(velocityRef.current);
-      if (abs < BASE_SPEED) {
-        velocityRef.current = velocityRef.current < 0 ? -BASE_SPEED : BASE_SPEED;
-      }
-    }
-    try {
-      viewportRef.current?.releasePointerCapture(event.pointerId);
-    } catch {
-      /* already released */
-    }
-  };
-
-  const active = services.find((s) => s.id === expanded) ?? null;
 
   return (
     <section id="solucoes" className="services" aria-labelledby="services-title">
       <div className="wrap">
         <Reveal variant="fade-blur" className="services__intro">
-          <p className="services__eyebrow">Soluções para eventos</p>
-          <h2 id="services-title" className="font-display services__title">
-            Formatos para diferentes objetivos, públicos e estruturas.
-          </h2>
-          <p className="services__lead">
-            Reunimos soluções fotográficas, digitais, interativas e de conveniência para
-            eventos corporativos, ações de marca e celebrações sociais.
-          </p>
-          <p className="services__lead services__lead--secondary">
-            Cada formato pode ser personalizado de acordo com a identidade visual, o fluxo do
-            público, o espaço disponível e o tipo de entrega que o projeto precisa gerar.
-          </p>
+          <div className="services__copy">
+            <p className="services__eyebrow">O que oferecemos</p>
+            <h2 id="services-title" className="font-display services__title">
+              Soluções para <em>eventos</em>
+            </h2>
+            <p className="services__lead">
+              Cada formato pode ser personalizado de acordo com a identidade visual, o fluxo do
+              público, o espaço disponível e o tipo de entrega que o projeto precisa gerar.
+            </p>
+          </div>
+          <div className="services__nav" role="group" aria-label="Navegar soluções">
+            <button
+              type="button"
+              className="services__arrow"
+              aria-label="Soluções anteriores"
+              disabled={!canPrev}
+              onClick={() => scrollByCard(-1)}
+            >
+              <ChevronLeft size={20} strokeWidth={2} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="services__arrow"
+              aria-label="Próximas soluções"
+              disabled={!canNext}
+              onClick={() => scrollByCard(1)}
+            >
+              <ChevronRight size={20} strokeWidth={2} aria-hidden />
+            </button>
+          </div>
         </Reveal>
       </div>
 
       <div className="services__shell">
-        <div className="services__fade services__fade--left" aria-hidden="true" />
-        <div className="services__fade services__fade--right" aria-hidden="true" />
-
         <div
-          ref={viewportRef}
-          className="services__viewport"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onPointerLeave={(event) => {
-            if (draggingRef.current || axisRef.current === "x") endDrag(event);
-          }}
+          ref={trackRef}
+          className="services__track"
+          aria-label="Lista de soluções. Use as setas ou deslize na horizontal."
         >
-          <div
-            ref={trackRef}
-            className="services__track"
-            aria-label="Lista de soluções em carrossel contínuo. Arraste na horizontal para acelerar."
-          >
-            {loop.map((service, index) => {
-              const isClone = index >= services.length;
-              return (
-                <ServiceCard
-                  key={`${service.id}-${index}`}
-                  service={service}
-                  expanded={!isClone && expanded === service.id}
-                  panelId={panelId}
-                  inert={isClone}
-                  onToggle={() => {
-                    if (suppressClickRef.current) {
-                      suppressClickRef.current = false;
-                      return;
-                    }
-                    if (isClone) return;
-                    setExpanded((current) =>
-                      current === service.id ? null : service.id,
-                    );
-                  }}
-                />
-              );
-            })}
-          </div>
+          {services.map((service, index) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              expanded={expanded === service.id}
+              panelId={`${panelId}-${service.id}`}
+              onToggle={() =>
+                setExpanded((current) => (current === service.id ? null : service.id))
+              }
+            />
+          ))}
         </div>
-      </div>
-
-      <div
-        id={panelId}
-        className={`services__panel ${active ? "is-open" : ""}`}
-        hidden={!active}
-        role="region"
-        aria-label={active ? `Detalhes de ${active.name}` : undefined}
-      >
-        {active ? (
-          <div className="wrap services__panel-inner">
-            <div className="services__panel-top">
-              <div>
-                <h3 className="font-display">{active.name}</h3>
-                <p className="services__panel-tag">{active.tagline}</p>
-              </div>
-              <button
-                type="button"
-                className="services__close"
-                aria-label="Fechar detalhes do serviço"
-                onClick={() => setExpanded(null)}
-              >
-                <X size={20} strokeWidth={1.75} />
-              </button>
-            </div>
-            <div className="services__panel-grid">
-              <div className="services__panel-media">
-                <img
-                  src={active.image}
-                  alt={active.imageAlt}
-                  loading="lazy"
-                  width={800}
-                  height={600}
-                />
-              </div>
-              <div className="services__panel-copy">
-                {active.badges?.length ? (
-                  <ul className="services__badges">
-                    {active.badges.map((badge) => (
-                      <li key={badge}>{badge}</li>
-                    ))}
-                  </ul>
-                ) : null}
-                {active.description.map((paragraph) => (
-                  <p key={paragraph.slice(0, 24)}>{paragraph}</p>
-                ))}
-                <AnimatedButton
-                  href={createWhatsAppUrl(active.whatsappMessage)}
-                  external
-                  variant="dark"
-                  className="mt-4"
-                  aria-label={`Conversar sobre ${active.name} no WhatsApp`}
-                >
-                  Conversar sobre este serviço
-                </AnimatedButton>
-              </div>
-            </div>
-          </div>
-        ) : null}
       </div>
 
       <div className="sr-only">
@@ -321,42 +125,185 @@ export function ServicesCarousel() {
 
 function ServiceCard({
   service,
+  index,
   expanded,
   panelId,
   onToggle,
-  inert = false,
 }: {
   service: Service;
+  index: number;
   expanded: boolean;
   panelId: string;
   onToggle: () => void;
-  inert?: boolean;
 }) {
+  const detail = service.description.slice(1).join(" ");
+  const isImagenow = service.badges?.some((b) =>
+    /desenvolvido pela imagenow/i.test(b),
+  );
+  const otherBadges =
+    service.badges?.filter((b) => !/desenvolvido pela imagenow/i.test(b)) ?? [];
+
+  const detailRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const readyRef = useRef(false);
+  const reduced = useReducedMotion();
+
+  useGSAP(
+    () => {
+      const panel = detailRef.current;
+      const inner = innerRef.current;
+      if (!panel || !inner) return;
+
+      gsap.killTweensOf([panel, inner]);
+
+      if (reduced) {
+        gsap.set(panel, {
+          height: expanded ? "auto" : 0,
+          opacity: expanded ? 1 : 0,
+          overflow: "hidden",
+        });
+        gsap.set(inner, { y: 0, opacity: expanded ? 1 : 0 });
+        readyRef.current = true;
+        return;
+      }
+
+      if (!readyRef.current) {
+        gsap.set(panel, {
+          height: expanded ? "auto" : 0,
+          opacity: expanded ? 1 : 0,
+          overflow: "hidden",
+        });
+        gsap.set(inner, { y: 0, opacity: expanded ? 1 : 0 });
+        readyRef.current = true;
+        return;
+      }
+
+      if (expanded) {
+        gsap.set(panel, { height: "auto", opacity: 1, overflow: "hidden" });
+        const target = panel.scrollHeight;
+        gsap.fromTo(
+          panel,
+          { height: 0, opacity: 0.35 },
+          {
+            height: target,
+            opacity: 1,
+            duration: 0.62,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.set(panel, { height: "auto", overflow: "visible" });
+            },
+          },
+        );
+        gsap.fromTo(
+          inner,
+          { y: 14, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.55,
+            delay: 0.1,
+            ease: "power3.out",
+          },
+        );
+      } else {
+        const current = panel.scrollHeight;
+        gsap.set(panel, { height: current, overflow: "hidden" });
+        gsap.to(inner, {
+          y: 8,
+          opacity: 0,
+          duration: 0.28,
+          ease: "power2.in",
+        });
+        gsap.to(panel, {
+          height: 0,
+          opacity: 0,
+          duration: 0.48,
+          delay: 0.04,
+          ease: "power3.inOut",
+        });
+      }
+    },
+    { dependencies: [expanded, reduced] },
+  );
+
   return (
     <article
-      className={`service-card accent-${service.accent} ${expanded ? "is-expanded" : ""}`}
-      aria-hidden={inert || undefined}
+      className={`service-card${expanded ? " is-expanded" : ""}${isImagenow ? " has-stamp" : ""}`}
+      aria-labelledby={`${panelId}-title`}
     >
-      <div className="service-card__media">
-        <img src={service.image} alt="" loading="lazy" width={640} height={480} />
-      </div>
-      <div className="service-card__body">
-        {service.badges?.[0] ? (
-          <span className="service-card__badge">{service.badges[0]}</span>
-        ) : null}
-        <h3 className="font-display">{service.name}</h3>
+      <span className="service-card__index" aria-hidden="true">
+        {padIndex(index)}
+      </span>
+
+      {isImagenow ? (
+        <img
+          src="/images/carimbo.png"
+          alt="Criado pela Imagenow"
+          width={140}
+          height={140}
+          className="service-card__stamp"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : null}
+
+      <div className="service-card__main">
+        <h3 id={`${panelId}-title`} className="font-display service-card__name">
+          {service.name}
+        </h3>
         <p className="service-card__tag">{service.tagline}</p>
         <p className="service-card__summary">{service.summary}</p>
+
+        {otherBadges.length ? (
+          <ul className="service-card__badges">
+            {otherBadges.map((badge) => (
+              <li
+                key={badge}
+                className={
+                  /desenvolvimento/i.test(badge)
+                    ? "service-card__badge service-card__badge--muted"
+                    : "service-card__badge"
+                }
+              >
+                {badge}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
         <button
           type="button"
           className="service-card__expand"
           aria-expanded={expanded}
           aria-controls={panelId}
-          tabIndex={inert ? -1 : undefined}
           onClick={onToggle}
         >
-          {expanded ? "Recolher" : "Ver detalhes"}
+          Ver {expanded ? "menos" : "mais"}{" "}
+          <span aria-hidden="true">{expanded ? "×" : "+"}</span>
         </button>
+      </div>
+
+      <div
+        id={panelId}
+        ref={detailRef}
+        className="service-card__detail"
+        role="region"
+        aria-hidden={!expanded}
+        aria-label={`Detalhes de ${service.name}`}
+      >
+        <div ref={innerRef} className="service-card__detail-inner">
+          {detail ? <p>{detail}</p> : null}
+          <a
+            className="service-card__cta"
+            href={createWhatsAppUrl(service.whatsappMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={expanded ? undefined : -1}
+          >
+            Conversar sobre este serviço
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
       </div>
     </article>
   );

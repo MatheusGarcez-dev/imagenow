@@ -1,18 +1,11 @@
-import { useState } from "react";
-import { brands, brandAlt, brandIcons } from "@/data/brands";
+import { useState, type CSSProperties } from "react";
+import { brandAlt, brandLogo, type BrandName } from "@/data/brands";
 import "./BrandMarquee.css";
 
-function BrandMark({
-  brand,
-  isClone,
-}: {
-  brand: (typeof brands)[number];
-  isClone: boolean;
-}) {
-  const slug = brandIcons[brand];
+function BrandMark({ brand, isClone }: { brand: BrandName; isClone: boolean }) {
   const [failed, setFailed] = useState(false);
 
-  if (!slug || failed) {
+  if (failed) {
     return (
       <span className="brand-marquee__word" title={brand}>
         {brand}
@@ -22,10 +15,10 @@ function BrandMark({
 
   return (
     <img
-      src={`https://cdn.simpleicons.org/${slug}/ffffff`}
+      src={brandLogo(brand)}
       alt={isClone ? "" : brandAlt(brand)}
-      width={88}
-      height={28}
+      width={160}
+      height={64}
       loading="lazy"
       decoding="async"
       className="brand-marquee__logo"
@@ -34,12 +27,24 @@ function BrandMark({
   );
 }
 
-export function BrandMarquee() {
+type BrandMarqueeProps = {
+  brands: readonly BrandName[];
+  direction?: "left" | "right";
+  duration?: number;
+};
+
+export function BrandMarquee({
+  brands,
+  direction = "left",
+  duration = 50,
+}: BrandMarqueeProps) {
   const loop = [...brands, ...brands];
 
   return (
-    <div className="brand-marquee">
-      <h2 className="sr-only">Marcas e empresas atendidas pela Imagenow</h2>
+    <div
+      className={`brand-marquee brand-marquee--${direction}`}
+      style={{ "--marquee-duration": `${duration}s` } as CSSProperties}
+    >
       <div className="brand-marquee__viewport">
         <ul className="brand-marquee__track" aria-label="Marcas atendidas">
           {loop.map((brand, index) => {

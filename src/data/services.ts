@@ -271,12 +271,8 @@ export const contexts = [
   {
     id: "eventos-corporativos",
     title: "Eventos corporativos",
-    text: "Convenções, feiras e encontros internos com ativações que geram participação, registro e presença de marca.",
-    features: [
-      "Convenções, feiras e confraternizações",
-      "Participação e presença de marca",
-    ],
-    image: "/images/hero-bg.png",
+    text: "Para convenções, confraternizações, encontros internos, feiras e eventos de relacionamento. Criamos ativações que ajudam a gerar participação, registro e presença de marca durante o evento.",
+    image: "/images/card-eventos.webp",
     imageAlt: "Ativação fotográfica da Imagenow em evento corporativo",
     tone: "corporate" as const,
     whatsappMessage:
@@ -285,12 +281,8 @@ export const contexts = [
   {
     id: "acoes-de-marca",
     title: "Ações de marca",
-    text: "Lançamentos, campanhas e ativações promocionais com soluções visuais que conectam público e marca.",
-    features: [
-      "Campanhas e projetos especiais",
-      "Conteúdo visual alinhado à identidade",
-    ],
-    image: "/images/hero-bg.png",
+    text: "Para lançamentos, campanhas e ativações promocionais. Soluções visuais que conectam público e marca com presença, conteúdo e lembrança no ponto da ação.",
+    image: "/images/card-de-acoes-da-marca.jpeg",
     imageAlt: "Ativação de marca com registros visuais da Imagenow",
     tone: "brand" as const,
     whatsappMessage:
@@ -299,12 +291,8 @@ export const contexts = [
   {
     id: "celebracoes-sociais",
     title: "Celebrações sociais",
-    text: "Casamentos, aniversários e festas com registros impressos, digitais e interativos para os convidados.",
-    features: [
-      "Registros impressos e digitais",
-      "Experiências que envolvem os convidados",
-    ],
-    image: "/images/event-rhythm-banner.png",
+    text: "Para casamentos, aniversários e festas. Registros impressos, digitais e interativos que envolvem os convidados e seguem como lembrança depois do evento.",
+    image: "/images/card-celebracoes.webp",
     imageAlt: "Registro fotográfico da Imagenow em celebração social",
     tone: "social" as const,
     whatsappMessage:

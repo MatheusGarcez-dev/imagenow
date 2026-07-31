@@ -15,20 +15,25 @@ export function useHeroEntrance(enabled = true) {
       const el = root.current;
       if (!el || !enabled) return;
 
-      const media = el.querySelector(".hero__media");
+      const wash = el.querySelector(".hero__media");
+      const panel = el.querySelector(".hero__panel");
       const badge = el.querySelector(".hero__badge");
+      const kicker = el.querySelector(".hero__kicker");
       const title = el.querySelector(".hero__title");
+      const sign = el.querySelector(".hero__sign");
       const lead = el.querySelector(".hero__lead");
       const ctas = el.querySelector(".hero__ctas");
-      const brands = el.querySelector(".hero__brands");
-      const targets = [media, badge, title, lead, ctas, brands].filter(Boolean);
+      const pager = el.querySelector(".hero__pager");
+      const targets = [wash, panel, badge, kicker, title, sign, lead, ctas, pager].filter(
+        Boolean,
+      );
 
       if (reduced) {
         gsap.set(targets, { clearProps: "all", opacity: 1, filter: "none" });
         return;
       }
 
-      const mobile = window.matchMedia("(max-width: 1023px)").matches;
+      const mobile = window.matchMedia("(max-width: 959px)").matches;
       const tl = gsap.timeline({
         defaults: { ease: "power2.out" },
         onComplete: () => {
@@ -36,48 +41,65 @@ export function useHeroEntrance(enabled = true) {
         },
       });
 
-      if (media) {
+      if (wash) {
         tl.fromTo(
-          media,
+          wash,
+          mobile ? { opacity: 0 } : { opacity: 0, scale: 1.05 },
           mobile
-            ? { opacity: 0 }
-            : { opacity: 0, scale: 1.04, filter: "blur(12px)" },
-          mobile
-            ? { opacity: 1, duration: 0.9 }
-            : { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.35 },
+            ? { opacity: 1, duration: 0.85 }
+            : { opacity: 1, scale: 1, duration: 1.2 },
           0,
+        );
+      }
+
+      if (panel) {
+        tl.fromTo(
+          panel,
+          mobile
+            ? { opacity: 0, y: 16 }
+            : { opacity: 0, y: 24, filter: "blur(8px)" },
+          mobile
+            ? { opacity: 1, y: 0, duration: 0.75 }
+            : { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.95 },
+          mobile ? 0.1 : 0.16,
         );
       }
 
       tl.fromTo(
         badge,
-        { opacity: 0, y: mobile ? 10 : 14 },
-        { opacity: 1, y: 0, duration: 0.65 },
-        mobile ? 0.15 : 0.3,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        mobile ? 0.28 : 0.4,
       )
         .fromTo(
-          title,
-          { opacity: 0, y: mobile ? 18 : 32 },
-          { opacity: 1, y: 0, duration: mobile ? 0.75 : 1 },
-          mobile ? 0.22 : 0.4,
+          kicker,
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.55 },
+          mobile ? 0.34 : 0.48,
         )
         .fromTo(
-          lead,
-          { opacity: 0, y: mobile ? 12 : 20 },
-          { opacity: 1, y: 0, duration: 0.7 },
-          mobile ? 0.35 : 0.62,
+          title,
+          { opacity: 0, y: mobile ? 18 : 26 },
+          { opacity: 1, y: 0, duration: mobile ? 0.7 : 0.9 },
+          mobile ? 0.4 : 0.56,
+        )
+        .fromTo(
+          [sign, lead].filter(Boolean),
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.55, stagger: 0.05 },
+          mobile ? 0.52 : 0.72,
         )
         .fromTo(
           ctas,
-          { opacity: 0, y: mobile ? 10 : 16 },
-          { opacity: 1, y: 0, duration: 0.65 },
-          mobile ? 0.45 : 0.8,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.55 },
+          mobile ? 0.62 : 0.86,
         )
         .fromTo(
-          brands,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.7 },
-          mobile ? 0.55 : 0.95,
+          pager,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.45 },
+          mobile ? 0.72 : 0.98,
         );
     },
     { scope: root, dependencies: [enabled, reduced], revertOnUpdate: true },

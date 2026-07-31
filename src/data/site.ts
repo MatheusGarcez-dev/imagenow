@@ -2,14 +2,15 @@ export const siteConfig = {
   name: "Imagenow",
   tagline: "imagenow. still happening.",
   description:
-    "A Imagenow cria ativações, registros fotográficos, soluções digitais e estruturas para eventos corporativos, ações de marca e celebrações sociais.",
+    "A Imagenow cria soluções que entram no ritmo do evento. Planejamento, design, tecnologia e operação trabalham juntos para transformar encontros em registros, interações e lembranças que continuam acontecendo.",
   url: import.meta.env.VITE_SITE_URL ?? "https://imagenow.com.br",
   email: import.meta.env.VITE_EMAIL ?? "contato@imagenow.com.br",
   city: "São Paulo, SP",
   whatsapp: import.meta.env.VITE_WHATSAPP ?? "5511999999999",
   social: {
-    instagram: "https://instagram.com/imagenow",
     linkedin: "https://linkedin.com/company/imagenow",
+    instagram: "https://instagram.com/imagenow",
+    facebook: "https://facebook.com/imagenow",
   },
 } as const;
 
