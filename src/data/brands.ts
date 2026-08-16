@@ -39,16 +39,58 @@ export const brands = [
 
 export type BrandName = (typeof brands)[number];
 
-/** Logos em /public/images/logos/{n}.png — ordem igual à lista `brands` (1 = Adidas … 36 = Braschemical) */
+/**
+ * Arquivos em /public/images/logos/{n}.png
+ * Mapa explícito (a ordem da lista mudou; os PNGs mantêm a numeração original).
+ * BRADESCO SHOP e IGUATEMI ainda precisam de arte própria.
+ */
+const logoFileByBrand: Record<BrandName, number> = {
+  Adidas: 1,
+  "Itaú": 2,
+  Lacoste: 3,
+  CAIXA: 4,
+  "Levi's": 5,
+  "BRADESCO SHOP": 6,
+  LATAM: 6,
+  Havaianas: 7,
+  Piet: 27,
+  SmartFit: 8,
+  IGUATEMI: 11,
+  Pringles: 9,
+  Stellantis: 10,
+  "Cacau Show": 11,
+  Posca: 12,
+  Dasa: 13,
+  "Saint-Gobain": 14,
+  Dexco: 15,
+  Gafisa: 16,
+  EZTEC: 17,
+  "Coco Bambu": 18,
+  "Banco Fibra": 19,
+  "Ri Happy": 20,
+  Worldpay: 21,
+  "Pura Vida": 22,
+  "Cubo Itaú": 23,
+  "St. Paul's School": 24,
+  Lysoform: 25,
+  "Conta Simples": 26,
+  Yázigi: 28,
+  "Colégio Objetivo": 29,
+  MPD: 30,
+  Taboca: 31,
+  Alphaquip: 32,
+  Rotary: 33,
+  Braschemical: 34,
+};
+
 export function brandLogo(brand: BrandName) {
-  const index = brands.indexOf(brand);
-  const n = index >= 0 ? index + 1 : 1;
+  const n = logoFileByBrand[brand] ?? 1;
   return `/images/logos/${n}.png`;
 }
 
 export function brandAlt(name: string) {
   const isEmpresa =
-    /banco|caixa|dasa|gafisa|eztec|worldpay|rotary|stellantis|saint|dexco|fibra|cubo|objetivo|paul|bradesco|iguatemi/i.test(
+    /banco|caixa|dasa|gafisa|eztec|worldpay|rotary|stellantis|saint|dexco|fibra|cubo|objetivo|paul|bradesco|iguatemi|mpd/i.test(
       name,
     );
   return `${name} - ${isEmpresa ? "empresa" : "marca"} atendida pela Imagenow`;
