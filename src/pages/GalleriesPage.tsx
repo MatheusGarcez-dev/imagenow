@@ -12,25 +12,27 @@ import { breadcrumbJsonLd } from "@/lib/seo";
 import "./GalleriesPage.css";
 
 const ERROR_COPY = {
-  empty: "Digite o código do evento para continuar.",
-  not_found: "Não encontramos uma galeria com esse código. Confira e tente de novo.",
+  empty: "Informe a data e a senha do evento para continuar.",
+  not_found: "Não encontramos uma galeria com esses dados. Confira e tente de novo.",
   inactive: "Essa galeria ainda não está disponível. Fale com a produção do evento.",
   expired: "O prazo de disponibilidade dessa galeria encerrou. Entre em contato com a Imagenow.",
 } as const;
 
 export function GalleriesPage() {
-  const inputId = useId();
+  const dateId = useId();
+  const passwordId = useId();
   const errorId = useId();
   const [searchParams] = useSearchParams();
-  const [code, setCode] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const autoHandled = useRef(false);
 
   usePageMeta({
-    title: "Galerias de Eventos | Imagenow",
+    title: "Fotos do seu evento | Imagenow",
     description:
-      "Acesse as fotos do seu evento Imagenow. Digite o código recebido para abrir sua galeria, baixar imagens e reviver os momentos registrados.",
+      "Acesse as fotos do evento usando a data e a senha fornecida pela Imagenow. Disponíveis por 30 dias após o evento.",
     path: "/galerias",
   });
 
@@ -41,7 +43,7 @@ export function GalleriesPage() {
     autoHandled.current = true;
 
     const normalized = normalizeGalleryCode(fromQuery);
-    setCode(normalized);
+    setPassword(normalized);
 
     const result = findGalleryByCode(normalized);
     if (result.ok) {
@@ -64,14 +66,28 @@ export function GalleriesPage() {
     });
   }, [searchParams]);
 
-  function openGallery(raw: string) {
-    const result = findGalleryByCode(raw);
+  function openGallery(rawPassword: string, date: string) {
+    if (!rawPassword.trim() || !date) {
+      setError(ERROR_COPY.empty);
+      return;
+    }
+
+    const result = findGalleryByCode(rawPassword);
 
     if (!result.ok) {
-      setError(ERROR_COPY[result.reason]);
+      setError(ERROR_COPY[result.reason === "empty" ? "empty" : result.reason]);
       trackEvent("galeria_codigo_erro", {
         reason: result.reason,
-        code: normalizeGalleryCode(raw) || "(vazio)",
+        code: normalizeGalleryCode(rawPassword) || "(vazio)",
+      });
+      return;
+    }
+
+    if (result.entry.eventDate && result.entry.eventDate !== date) {
+      setError(ERROR_COPY.not_found);
+      trackEvent("galeria_codigo_erro", {
+        reason: "date_mismatch",
+        code: normalizeGalleryCode(rawPassword),
       });
       return;
     }
@@ -79,7 +95,7 @@ export function GalleriesPage() {
     setError(null);
     setPending(true);
     trackEvent("galeria_acessar", {
-      code: normalizeGalleryCode(raw),
+      code: normalizeGalleryCode(rawPassword),
       event_name: result.entry.name,
       client: result.entry.client ?? "",
     });
@@ -89,7 +105,7 @@ export function GalleriesPage() {
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    openGallery(code);
+    openGallery(password, eventDate);
   }
 
   return (
@@ -105,13 +121,15 @@ export function GalleriesPage() {
               <nav className="galleries-page__crumbs" aria-label="Breadcrumb">
                 <Link to="/">Home</Link>
                 <span aria-hidden="true">/</span>
-                <span>Galerias</span>
+                <span>Fotos</span>
               </nav>
               <p className="galleries-page__eyebrow">Galerias de eventos</p>
-              <h1 className="font-display">Acesse as fotos do seu evento</h1>
+              <h1 className="font-display">Fotos do seu evento</h1>
               <p className="galleries-page__lead">
-                O evento continua aqui. Digite o código recebido para abrir sua galeria,
-                baixar suas imagens e reviver os momentos registrados pela Imagenow.
+                Acesse as fotos do evento usando a data e a senha fornecida pela Imagenow.
+              </p>
+              <p className="galleries-page__availability">
+                Disponíveis por 30 dias após o evento.
               </p>
             </Reveal>
           </div>
@@ -120,36 +138,58 @@ export function GalleriesPage() {
         <div className="wrap galleries-page__body">
           <Reveal variant="scale-blur" delay={0.06}>
             <form className="galleries-page__form" onSubmit={onSubmit} noValidate>
-              <label className="galleries-page__label" htmlFor={inputId}>
-                Código do evento
-              </label>
+              <div className="galleries-page__fields">
+                <div>
+                  <label className="galleries-page__label" htmlFor={dateId}>
+                    Data do evento
+                  </label>
+                  <input
+                    id={dateId}
+                    name="eventDate"
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => {
+                      setEventDate(e.target.value);
+                      if (error) setError(null);
+                    }}
+                    aria-invalid={error ? true : undefined}
+                    className="galleries-page__input"
+                  />
+                </div>
+                <div>
+                  <label className="galleries-page__label" htmlFor={passwordId}>
+                    Senha
+                  </label>
+                  <input
+                    id={passwordId}
+                    name="password"
+                    type="text"
+                    inputMode="text"
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
+                    placeholder="Senha fornecida pela Imagenow"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value.toUpperCase());
+                      if (error) setError(null);
+                    }}
+                    aria-invalid={error ? true : undefined}
+                    aria-describedby={error ? errorId : undefined}
+                    className="galleries-page__input"
+                  />
+                </div>
+              </div>
+
               <div className="galleries-page__row">
-                <input
-                  id={inputId}
-                  name="code"
-                  type="text"
-                  inputMode="text"
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  spellCheck={false}
-                  placeholder="Ex.: LEVISPIET2026"
-                  value={code}
-                  onChange={(e) => {
-                    setCode(e.target.value.toUpperCase());
-                    if (error) setError(null);
-                  }}
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? errorId : undefined}
-                  className="galleries-page__input"
-                />
                 <AnimatedButton
                   type="submit"
                   variant="dark"
                   className="galleries-page__submit"
                   showIcon={!pending}
-                  aria-label="Acessar galeria"
+                  aria-label="Acessar fotos"
                 >
-                  {pending ? "Abrindo…" : "Acessar galeria"}
+                  {pending ? "Abrindo…" : "Acessar fotos"}
                 </AnimatedButton>
               </div>
               {error ? (
@@ -158,8 +198,8 @@ export function GalleriesPage() {
                 </p>
               ) : (
                 <p className="galleries-page__hint">
-                  O código costuma vir no QR Code, no material do evento ou na mensagem enviada
-                  pela produção. A senha ou PIN da galeria, quando existir, é pedida no Pixieset.
+                  Use a data do evento e a senha enviada pela Imagenow (QR Code, material do
+                  evento ou mensagem da produção).
                 </p>
               )}
             </form>
@@ -193,8 +233,8 @@ export function GalleriesPage() {
 
           <Reveal variant="soft" delay={0.16}>
             <p className="galleries-page__footer-note">
-              As galerias ficam disponíveis por tempo limitado. Caso não encontre seu evento
-              ou queira solicitar a remoção de alguma imagem, entre em contato com a Imagenow.
+              Disponíveis por 30 dias após o evento. Caso não encontre sua galeria ou queira
+              solicitar a remoção de alguma imagem, entre em contato com a Imagenow.
             </p>
           </Reveal>
         </div>

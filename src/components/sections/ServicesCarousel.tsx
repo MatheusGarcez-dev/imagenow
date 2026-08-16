@@ -2,7 +2,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { services, type Service } from "@/data/services";
+import { visibleServices, type Service } from "@/data/services";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { Reveal } from "@/components/ui/Reveal";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -12,6 +12,10 @@ gsap.registerPlugin(useGSAP);
 
 function padIndex(index: number) {
   return String(index + 1).padStart(2, "0");
+}
+
+function isImagenowStamp(badges?: string[]) {
+  return Boolean(badges?.some((b) => /(desenvolvido|criado) pela imagenow/i.test(b)));
 }
 
 export function ServicesCarousel() {
@@ -92,7 +96,7 @@ export function ServicesCarousel() {
           className="services__track"
           aria-label="Lista de soluções. Use as setas ou deslize na horizontal."
         >
-          {services.map((service, index) => (
+          {visibleServices.map((service, index) => (
             <ServiceCard
               key={service.id}
               service={service}
@@ -108,7 +112,7 @@ export function ServicesCarousel() {
       </div>
 
       <div className="sr-only">
-        {services.map((service) => (
+        {visibleServices.map((service) => (
           <article key={`seo-${service.id}`} id={service.id}>
             <h3>{service.name}</h3>
             <p>{service.tagline}</p>
@@ -137,16 +141,32 @@ function ServiceCard({
   onToggle: () => void;
 }) {
   const detail = service.description.slice(1).join(" ");
-  const isImagenow = service.badges?.some((b) =>
-    /desenvolvido pela imagenow/i.test(b),
-  );
+  const stamped = isImagenowStamp(service.badges);
   const otherBadges =
-    service.badges?.filter((b) => !/desenvolvido pela imagenow/i.test(b)) ?? [];
+    service.badges?.filter((b) => !/(desenvolvido|criado) pela imagenow/i.test(b)) ?? [];
 
   const detailRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const readyRef = useRef(false);
   const reduced = useReducedMotion();
+
+  const syncPanelHeight = useCallback(() => {
+    const panel = detailRef.current;
+    if (!panel || !expanded) return;
+    gsap.set(panel, { height: "auto" });
+  }, [expanded]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (expanded) {
+      video.currentTime = 0;
+      void video.play().catch(() => undefined);
+    } else {
+      video.pause();
+    }
+  }, [expanded, service.video]);
 
   useGSAP(
     () => {
@@ -228,14 +248,14 @@ function ServiceCard({
 
   return (
     <article
-      className={`service-card${expanded ? " is-expanded" : ""}${isImagenow ? " has-stamp" : ""}`}
+      className={`service-card${expanded ? " is-expanded" : ""}${stamped ? " has-stamp" : ""}`}
       aria-labelledby={`${panelId}-title`}
     >
       <span className="service-card__index" aria-hidden="true">
         {padIndex(index)}
       </span>
 
-      {isImagenow ? (
+      {stamped ? (
         <img
           src="/images/carimbo.png"
           alt="Criado pela Imagenow"
@@ -271,16 +291,18 @@ function ServiceCard({
           </ul>
         ) : null}
 
-        <button
-          type="button"
-          className="service-card__expand"
-          aria-expanded={expanded}
-          aria-controls={panelId}
-          onClick={onToggle}
-        >
-          Ver {expanded ? "menos" : "mais"}{" "}
-          <span aria-hidden="true">{expanded ? "×" : "+"}</span>
-        </button>
+        <div className="service-card__actions">
+          <button
+            type="button"
+            className="service-card__expand"
+            aria-expanded={expanded}
+            aria-controls={panelId}
+            onClick={onToggle}
+          >
+            Ver {expanded ? "menos" : "mais"}{" "}
+            <span aria-hidden="true">{expanded ? "×" : "+"}</span>
+          </button>
+        </div>
       </div>
 
       <div
@@ -292,6 +314,32 @@ function ServiceCard({
         aria-label={`Detalhes de ${service.name}`}
       >
         <div ref={innerRef} className="service-card__detail-inner">
+          <figure className="service-card__media">
+            {service.video ? (
+              <video
+                ref={videoRef}
+                className="service-card__video"
+                src={service.video}
+                muted
+                loop
+                playsInline
+                autoPlay={expanded}
+                preload="metadata"
+                aria-label={service.imageAlt}
+                onLoadedData={syncPanelHeight}
+              />
+            ) : (
+              <img
+                src={service.image}
+                alt={service.imageAlt}
+                width={640}
+                height={800}
+                loading="lazy"
+                decoding="async"
+                onLoad={syncPanelHeight}
+              />
+            )}
+          </figure>
           {detail ? <p>{detail}</p> : null}
           <a
             className="service-card__cta"

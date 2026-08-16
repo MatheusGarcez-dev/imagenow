@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import {
+  casamentosReviewsUrl,
   googleRatingSummary,
   googleReviewsUrl,
   testimonials,
@@ -31,12 +32,9 @@ export function SocialProofSection() {
     <section className="social-proof" aria-labelledby="social-proof-title">
       <div className="wrap">
         <Reveal variant="fade-blur" className="social-proof__header">
-          <p className="social-proof__rating">
-            <span className="social-proof__rating-score">{googleRatingSummary.rating.toFixed(1)}</span>
-            <RatingStars rating={5} label="5 de 5 estrelas no Google" />
-            <span className="social-proof__rating-meta">
-              no Google · {googleRatingSummary.countLabel} avaliações
-            </span>
+          <p className="social-proof__rating" aria-label="5.0 no Google, mais de 100 avaliações">
+            ⭐ {googleRatingSummary.rating.toFixed(1)} no Google •{" "}
+            {googleRatingSummary.countLabel} avaliações
           </p>
           <h2 id="social-proof-title" className="font-display">
             Confiança construída em eventos reais.
@@ -85,6 +83,15 @@ export function SocialProofSection() {
             variant="outline"
           >
             Ver mais avaliações no Google
+          </AnimatedButton>
+          <AnimatedButton
+            href={casamentosReviewsUrl}
+            external
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="outline"
+          >
+            Avaliações no Casamentos.com
           </AnimatedButton>
         </Reveal>
       </div>

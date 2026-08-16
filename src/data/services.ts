@@ -7,11 +7,21 @@ export type Service = {
   badges?: string[];
   image: string;
   imageAlt: string;
+  /** Vídeo exibido no card expandido (substitui a imagem quando presente) */
+  video?: string;
   whatsappMessage: string;
   keywords?: string[];
   accent: "purple" | "pink" | "orange" | "violet";
+  /** Oculto no carrossel e no JSON-LD; mantido no arquivo para referência */
+  hidden?: boolean;
+  /** Abre modal com formatos de foto (Totem / SelfieMobi) */
+  photoFormats?: boolean;
 };
 
+/**
+ * Ordem de exibição das soluções.
+ * Imagens: troque os arquivos em /public/images/services/ (veja lista no final do chat).
+ */
 export const services: Service[] = [
   {
     id: "totem-fotografico",
@@ -25,11 +35,29 @@ export const services: Service[] = [
       "Indicado para eventos corporativos, ações de marca e celebrações sociais que precisam de agilidade, boa leitura visual e entrega organizada.",
     ],
     badges: ["Desenvolvido pela Imagenow"],
-    image: "/images/hero-bg.png",
+    photoFormats: true,
+    image: "/images/services/totem-fotografico.png",
     imageAlt: "Totem Fotográfico da Imagenow com luz articulada em evento",
     whatsappMessage:
       "Olá! Gostaria de conversar sobre o Totem Fotográfico para um evento.",
     keywords: ["totem fotográfico", "foto impressa na hora", "eventos corporativos"],
+    accent: "purple",
+  },
+  {
+    id: "plataforma-360",
+    name: "Plataforma 360",
+    tagline: "Conteúdo em movimento.",
+    summary:
+      "Vídeos dinâmicos em rotação, com efeitos visuais e entrega rápida para compartilhamento.",
+    description: [
+      "A Plataforma 360 cria vídeos em rotação contínua, com efeitos visuais, variações de velocidade, câmera lenta e trilha personalizada.",
+      "Com iluminação adequada e operação orientada, o resultado é um conteúdo de forte apelo visual, pronto para ser compartilhado logo após a captura.",
+      "Indicado para eventos, festas e ações de marca que buscam impacto, movimento e presença digital.",
+    ],
+    image: "/images/services/plataforma-360.mp4",
+    imageAlt: "Plataforma 360 da Imagenow criando vídeo em evento",
+    video: "/images/services/plataforma-360.mp4",
+    whatsappMessage: "Olá! Gostaria de conversar sobre a Plataforma 360 para um evento.",
     accent: "purple",
   },
   {
@@ -44,7 +72,8 @@ export const services: Service[] = [
       "Indicado para eventos corporativos, ações de marca, celebrações sociais e projetos com grande circulação de pessoas.",
     ],
     badges: ["Desenvolvido pela Imagenow"],
-    image: "/images/hero-bg.png",
+    photoFormats: true,
+    image: "/images/services/selfiemobi.png",
     imageAlt: "SelfieMobi da Imagenow circulando em evento",
     whatsappMessage: "Olá! Gostaria de conversar sobre o SelfieMobi para um evento.",
     accent: "pink",
@@ -60,9 +89,161 @@ export const services: Service[] = [
       "Com iluminação profissional, interface intuitiva e envio digital imediato, o formato mantém o padrão técnico mesmo em uma dinâmica mais autônoma. A impressão também pode ser realizada em estação dedicada.",
       "Indicado para eventos que buscam agilidade, interação e autonomia sem abrir mão da qualidade visual.",
     ],
-    image: "/images/hero-bg.png",
+    badges: ["Desenvolvido pela Imagenow"],
+    photoFormats: true,
+    image: "/images/services/selfiemobi-2.png",
     imageAlt: "SelfieMobi 2 com iluminação profissional para eventos",
     whatsappMessage: "Olá! Gostaria de conversar sobre o SelfieMobi 2 para um evento.",
+    accent: "violet",
+  },
+  {
+    id: "audio-guestbook",
+    name: "Áudio Guestbook",
+    tagline: "Memórias que não se leem. Se escutam.",
+    summary:
+      "Mensagens de voz gravadas pelos convidados em um telefone cenográfico.",
+    description: [
+      "O Áudio Guestbook transforma mensagens em registros sonoros únicos, capturando a voz, o tom e a emoção de quem participa.",
+      "A dinâmica é simples: os convidados usam o telefone cenográfico para deixar recados espontâneos ao longo do evento, criando um acervo em áudio para ser revisitado depois.",
+      "Indicado para celebrações especiais e ações corporativas com depoimentos, feedbacks ou mensagens de marca.",
+    ],
+    image: "/images/services/audio-guestbook.png",
+    imageAlt: "Áudio Guestbook com telefone cenográfico para mensagens de convidados",
+    whatsappMessage:
+      "Olá! Gostaria de conversar sobre o Áudio Guestbook para um evento.",
+    accent: "pink",
+  },
+  {
+    id: "scrapbook",
+    name: "Scrapbook",
+    tagline: "Memórias que ganham página.",
+    summary:
+      "Álbum construído ao longo do evento com fotos impressas e mensagens dos convidados.",
+    description: [
+      "O Scrapbook transforma fotografias em um acervo físico e participativo, construído durante o próprio evento.",
+      "Os convidados podem escrever mensagens e dedicatórias ao lado das imagens, criando um material único, personalizado e cheio de presença.",
+      "Pode funcionar como atração principal ou integrado a outros formatos fotográficos da Imagenow.",
+    ],
+    badges: ["Desenvolvido pela Imagenow"],
+    image: "/images/services/scrapbook.png",
+    imageAlt: "Scrapbook com fotos impressas e mensagens dos convidados em evento",
+    whatsappMessage: "Olá! Gostaria de conversar sobre o Scrapbook para um evento.",
+    accent: "violet",
+  },
+  {
+    id: "boomerang-gif",
+    name: "GIF / Boomerang",
+    tagline: "Movimento que amplia presença.",
+    summary:
+      "Formato animado para gerar conteúdo dinâmico e compartilhável durante o evento.",
+    description: [
+      "Boomerangs e GIFs adicionam movimento ao registro, criando conteúdos leves, rápidos e prontos para compartilhamento digital.",
+      "Podem ser integrados ao Totem Fotográfico, ao SelfieMobi ou ao SelfieMobi 2, ampliando as possibilidades da ativação sem exigir uma estrutura separada.",
+      "Também podem funcionar como formato principal em ações digitais e promocionais.",
+    ],
+    image: "/images/services/boomerang-gif.png",
+    imageAlt: "GIF e Boomerang personalizados da Imagenow para eventos",
+    whatsappMessage:
+      "Olá! Gostaria de conversar sobre GIF / Boomerang para um evento.",
+    accent: "orange",
+  },
+  {
+    id: "reelsclip",
+    name: "ReelsClip",
+    tagline: "Vídeos curtos para ações que pedem compartilhamento.",
+    summary:
+      "Clipes personalizados com identidade da marca, entregues em formatos rápidos para uso digital.",
+    description: [
+      "O ReelsClip transforma registros rápidos em vídeos curtos personalizados, com aplicação de identidade visual, marca, campanha ou produto.",
+      "A entrega pode incluir efeitos, cortes, câmera lenta, aceleração e elementos gráficos, criando um material pronto para circular em redes sociais ou canais digitais.",
+      "Indicado para lançamentos, ações promocionais, ativações de marca e eventos que querem gerar conteúdo ágil.",
+    ],
+    image: "/images/services/reelsclip.mov",
+    imageAlt: "ReelsClip da Imagenow com vídeo curto personalizado para evento",
+    video: "/images/services/reelsclip.mov",
+    whatsappMessage: "Olá! Gostaria de conversar sobre o ReelsClip para um evento.",
+    accent: "orange",
+  },
+  {
+    id: "totem-interativo-touch",
+    name: "Totem Touch",
+    tagline: "Interação que começa no primeiro toque.",
+    summary:
+      "Tela interativa para comunicação, conteúdo, captação de dados, quizzes e ativações digitais.",
+    description: [
+      "O Totem Touch cria um ponto de contato direto entre o público e o conteúdo do evento.",
+      "Pode ser usado em recepção, apresentações, catálogos digitais, jogos, quizzes, captação de leads, pesquisas e ações interativas.",
+      "Indicado para eventos corporativos, feiras e ativações que precisam organizar informações, estimular participação ou oferecer navegação simples.",
+    ],
+    image: "/images/services/totem-touch.png",
+    imageAlt: "Totem Touch da Imagenow em evento corporativo",
+    whatsappMessage:
+      "Olá! Gostaria de conversar sobre o Totem Touch para um evento.",
+    accent: "purple",
+  },
+  {
+    id: "signcam",
+    name: "SignCam",
+    tagline: "Deixe sua marca.",
+    summary:
+      "Assinaturas, mensagens e palavras que ganham vida em foto e vídeo.",
+    description: [
+      "O SignCam combina captura em foto e vídeo com escrita, permitindo que cada participante deixe sua assinatura, mensagem ou palavra durante a experiência.",
+      "Uma solução versátil para ativações e celebrações, adaptável a diferentes propostas e momentos do evento — assinaturas, mensagens, palavras, respostas e outras dinâmicas personalizadas.",
+      "Indicado para ativações de marca, eventos corporativos e celebrações sociais que pedem participação e conteúdo personalizado.",
+    ],
+    image: "/images/services/signcam.webp",
+    imageAlt:
+      "Participante utilizando o SignCam da Imagenow para escrever uma mensagem durante uma ativação corporativa.",
+    whatsappMessage: "Olá! Gostaria de conversar sobre o SignCam para um evento.",
+    keywords: [
+      "SignCam",
+      "câmera de assinatura",
+      "foto com assinatura",
+      "vídeo com mensagem",
+      "ativação interativa",
+    ],
+    accent: "pink",
+  },
+  {
+    id: "pola",
+    name: "Pola",
+    tagline: "Enquanto a festa acontece, a memória se constrói.",
+    summary:
+      "Registro com estética instantânea e acompanhamento dedicado ao longo da celebração.",
+    description: [
+      "O Pola acompanha o evento registrando encontros, bastidores e momentos que muitas vezes passam despercebidos durante a celebração.",
+      "Cada fotografia é impressa em formato polaroid e reunida em uma entrega especial, construída ao longo do evento de forma sensível e personalizada.",
+      "Indicado principalmente para casamentos, aniversários, festas intimistas e celebrações que pedem um registro físico mais afetivo.",
+    ],
+    badges: ["Desenvolvido pela Imagenow"],
+    image: "/images/services/pola.webp",
+    imageAlt: "Fotos estilo polaroid da Imagenow em celebração social",
+    whatsappMessage: "Olá! Gostaria de conversar sobre o Pola para um evento.",
+    accent: "pink",
+  },
+  {
+    id: "fotos-com-ia",
+    name: "Fotos com IA",
+    tagline: "Transformando fotos em novas realidades.",
+    summary:
+      "Fotos transformadas com inteligência artificial, estilos artísticos exclusivos, compartilhamento digital e opção de impressão durante o evento.",
+    description: [
+      "A partir de uma fotografia, a inteligência artificial cria uma foto personalizada de acordo com o conceito do evento, da marca ou da campanha.",
+      "São diferentes estilos e possibilidades de transformação artística — como Cartoon, Studio Ghibli, Pixar, Anime, Pixel Art e Bobbie Goods — com compartilhamento digital e opção de impressão na hora.",
+      "Uma solução para eventos corporativos, ativações de marca, feiras, convenções e lançamentos.",
+    ],
+    image: "/images/services/fotos-com-ia.webp",
+    imageAlt:
+      "Participantes utilizando Fotos com IA da Imagenow em uma ativação corporativa com transformação artística.",
+    whatsappMessage: "Olá! Gostaria de conversar sobre Fotos com IA para um evento.",
+    keywords: [
+      "fotos com IA",
+      "inteligência artificial para eventos",
+      "foto personalizada",
+      "transformação artística",
+      "ativação de marca",
+    ],
     accent: "violet",
   },
   {
@@ -77,126 +258,27 @@ export const services: Service[] = [
       "Indicado para eventos corporativos, feiras, congressos, convenções e ativações com grande circulação de pessoas.",
     ],
     badges: ["Desenvolvido pela Imagenow"],
-    image: "/images/hero-bg.png",
+    image: "/images/services/lockers.webp",
     imageAlt: "Lockers carregadores da Imagenow para celulares em evento corporativo",
     whatsappMessage:
       "Olá! Gostaria de conversar sobre os Lockers carregadores para um evento.",
     accent: "orange",
   },
   {
-    id: "pola",
-    name: "Pola",
-    tagline: "Enquanto a festa acontece, a memória se constrói.",
-    summary:
-      "Registro com estética instantânea e acompanhamento dedicado ao longo da celebração.",
+    id: "projetos-especiais",
+    name: "Projetos especiais",
+    tagline: "Quando a ideia pede um novo formato.",
+    summary: "Soluções sob medida para ações, campanhas e contextos específicos.",
     description: [
-      "O Pola acompanha o evento registrando encontros, bastidores e momentos que muitas vezes passam despercebidos durante a celebração.",
-      "Cada fotografia é impressa em formato polaroid e reunida em uma entrega especial, construída ao longo do evento de forma sensível e personalizada.",
-      "Indicado principalmente para casamentos, aniversários, festas intimistas e celebrações que pedem um registro físico mais afetivo.",
+      "Os projetos especiais são desenvolvidos a partir de uma necessidade específica do evento, da marca ou da campanha.",
+      "Podem envolver inteligência artificial, produtos físicos personalizados, formatos de registro, interações digitais ou combinações entre diferentes soluções da Imagenow.",
+      "Indicados para marcas, produtoras, assessorias e empresas que precisam de uma entrega menos padronizada.",
     ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Fotos estilo polaroid da Imagenow em celebração social",
-    whatsappMessage: "Olá! Gostaria de conversar sobre o Pola para um evento.",
-    accent: "pink",
-  },
-  {
-    id: "spin-360",
-    name: "Spin 360",
-    tagline: "Conteúdo em movimento.",
-    summary:
-      "Vídeos dinâmicos em rotação, com efeitos visuais e entrega rápida para compartilhamento.",
-    description: [
-      "O Spin 360 cria vídeos em rotação contínua, com efeitos visuais, variações de velocidade, câmera lenta e trilha personalizada.",
-      "Com iluminação adequada e operação orientada, o resultado é um conteúdo de forte apelo visual, pronto para ser compartilhado logo após a captura.",
-      "Indicado para eventos, festas e ações de marca que buscam impacto, movimento e presença digital.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Spin 360 da Imagenow criando vídeo em evento",
-    whatsappMessage: "Olá! Gostaria de conversar sobre o Spin 360 para um evento.",
+    image: "/images/services/projetos-especiais.webp",
+    imageAlt: "Projeto especial da Imagenow para ação de marca",
+    whatsappMessage:
+      "Olá! Gostaria de conversar sobre Projetos especiais para um evento.",
     accent: "purple",
-  },
-  {
-    id: "reelsclip",
-    name: "ReelsClip",
-    tagline: "Vídeos curtos para ações que pedem compartilhamento.",
-    summary:
-      "Clipes personalizados com identidade da marca, entregues em formatos rápidos para uso digital.",
-    description: [
-      "O ReelsClip transforma registros rápidos em vídeos curtos personalizados, com aplicação de identidade visual, marca, campanha ou produto.",
-      "A entrega pode incluir efeitos, cortes, câmera lenta, aceleração e elementos gráficos, criando um material pronto para circular em redes sociais ou canais digitais.",
-      "Indicado para lançamentos, ações promocionais, ativações de marca e eventos que querem gerar conteúdo ágil.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "ReelsClip da Imagenow com vídeo curto personalizado para evento",
-    whatsappMessage: "Olá! Gostaria de conversar sobre o ReelsClip para um evento.",
-    accent: "orange",
-  },
-  {
-    id: "scrapbook",
-    name: "Scrapbook",
-    tagline: "Memórias que ganham página.",
-    summary:
-      "Álbum construído ao longo do evento com fotos impressas e mensagens dos convidados.",
-    description: [
-      "O Scrapbook transforma fotografias em um acervo físico e participativo, construído durante o próprio evento.",
-      "Os convidados podem escrever mensagens e dedicatórias ao lado das imagens, criando um material único, personalizado e cheio de presença.",
-      "Pode funcionar como atração principal ou integrado a outros formatos fotográficos da Imagenow.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Scrapbook com fotos impressas e mensagens dos convidados em evento",
-    whatsappMessage: "Olá! Gostaria de conversar sobre o Scrapbook para um evento.",
-    accent: "violet",
-  },
-  {
-    id: "audio-guestbook",
-    name: "Áudio Guestbook",
-    tagline: "Memórias que não se leem. Se escutam.",
-    summary:
-      "Mensagens de voz gravadas pelos convidados em um telefone cenográfico.",
-    description: [
-      "O Áudio Guestbook transforma mensagens em registros sonoros únicos, capturando a voz, o tom e a emoção de quem participa.",
-      "A dinâmica é simples: os convidados usam o telefone cenográfico para deixar recados espontâneos ao longo do evento, criando um acervo em áudio para ser revisitado depois.",
-      "Indicado para celebrações especiais e ações corporativas com depoimentos, feedbacks ou mensagens de marca.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Áudio Guestbook com telefone cenográfico para mensagens de convidados",
-    whatsappMessage:
-      "Olá! Gostaria de conversar sobre o Áudio Guestbook para um evento.",
-    accent: "pink",
-  },
-  {
-    id: "totem-interativo-touch",
-    name: "Totem Interativo Touch",
-    tagline: "Interação que começa no primeiro toque.",
-    summary:
-      "Tela interativa para comunicação, conteúdo, captação de dados, quizzes e ativações digitais.",
-    description: [
-      "O Totem Interativo Touch cria um ponto de contato direto entre o público e o conteúdo do evento.",
-      "Pode ser usado em recepção, apresentações, catálogos digitais, jogos, quizzes, captação de leads, pesquisas e ações interativas.",
-      "Indicado para eventos corporativos, feiras e ativações que precisam organizar informações, estimular participação ou oferecer navegação simples.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Totem Interativo Touch da Imagenow em evento corporativo",
-    whatsappMessage:
-      "Olá! Gostaria de conversar sobre o Totem Interativo Touch para um evento.",
-    accent: "purple",
-  },
-  {
-    id: "boomerang-gif",
-    name: "Boomerang & GIF",
-    tagline: "Movimento que amplia presença.",
-    summary:
-      "Formato animado para gerar conteúdo dinâmico e compartilhável durante o evento.",
-    description: [
-      "Boomerangs e GIFs adicionam movimento ao registro, criando conteúdos leves, rápidos e prontos para compartilhamento digital.",
-      "Podem ser integrados ao Totem Fotográfico, ao SelfieMobi ou ao SelfieMobi 2, ampliando as possibilidades da ativação sem exigir uma estrutura separada.",
-      "Também podem funcionar como formato principal em ações digitais e promocionais.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Boomerang e GIF personalizados da Imagenow para eventos",
-    whatsappMessage:
-      "Olá! Gostaria de conversar sobre Boomerang & GIF para um evento.",
-    accent: "orange",
   },
   {
     id: "bottons-com-foto",
@@ -208,11 +290,12 @@ export const services: Service[] = [
       "A produção acontece a partir das imagens capturadas no evento, com possibilidade de aplicar identidade visual, tema, campanha ou marca.",
       "Indicado para ações promocionais, eventos corporativos, campanhas internas e celebrações que buscam uma lembrança diferente e divertida.",
     ],
-    image: "/images/hero-bg.png",
+    image: "/images/services/bottons.webp",
     imageAlt: "Bottons personalizados com foto produzidos durante evento",
     whatsappMessage:
       "Olá! Gostaria de conversar sobre Bottons com foto para um evento.",
     accent: "pink",
+    hidden: true,
   },
   {
     id: "posteres-fotograficos",
@@ -225,27 +308,12 @@ export const services: Service[] = [
       "Podem ser usados como brinde, peça de ambientação, recordação, entrega especial ou ação promocional personalizada.",
       "Indicado para marcas, empresas e celebrações que querem ir além da impressão tradicional.",
     ],
-    image: "/images/hero-bg.png",
+    image: "/images/services/posteres.webp",
     imageAlt: "Pôster fotográfico personalizado impresso para evento",
     whatsappMessage:
       "Olá! Gostaria de conversar sobre Pôsteres fotográficos para um evento.",
     accent: "violet",
-  },
-  {
-    id: "projetos-especiais",
-    name: "Projetos especiais",
-    tagline: "Quando a ideia pede um novo formato.",
-    summary: "Soluções sob medida para ações, campanhas e contextos específicos.",
-    description: [
-      "Os projetos especiais são desenvolvidos a partir de uma necessidade específica do evento, da marca ou da campanha.",
-      "Podem envolver inteligência artificial, produtos físicos personalizados, formatos de registro, interações digitais ou combinações entre diferentes soluções da Imagenow.",
-      "Indicados para marcas, produtoras, assessorias e empresas que precisam de uma entrega menos padronizada.",
-    ],
-    image: "/images/hero-bg.png",
-    imageAlt: "Projeto especial da Imagenow para ação de marca",
-    whatsappMessage:
-      "Olá! Gostaria de conversar sobre Projetos especiais para um evento.",
-    accent: "purple",
+    hidden: true,
   },
   {
     id: "cabine-fotografica",
@@ -259,21 +327,52 @@ export const services: Service[] = [
       "Indicada para eventos sociais, corporativos e ações de marca que buscam uma solução mais reservada para fotos personalizadas.",
     ],
     badges: ["Em desenvolvimento", "Desenvolvido pela Imagenow"],
-    image: "/images/hero-bg.png",
+    image: "/images/services/cabine.webp",
     imageAlt: "Cabine Fotográfica Imagenow em desenvolvimento para eventos",
     whatsappMessage:
       "Olá! Gostaria de conversar sobre a Cabine Fotográfica para um evento.",
     accent: "violet",
+    hidden: true,
   },
 ];
+
+export const visibleServices = services.filter((service) => !service.hidden);
+
+/** Placeholders dos formatos de foto — substitua em /public/images/formats/ */
+export const photoFormats = [
+  {
+    id: "formato-1",
+    label: "Formato 1",
+    image: "/images/formats/formato-1.webp",
+    alt: "Exemplo de formato de foto Imagenow",
+  },
+  {
+    id: "formato-2",
+    label: "Formato 2",
+    image: "/images/formats/formato-2.webp",
+    alt: "Exemplo de formato de foto Imagenow",
+  },
+  {
+    id: "formato-3",
+    label: "Formato 3",
+    image: "/images/formats/formato-3.webp",
+    alt: "Exemplo de formato de foto Imagenow",
+  },
+  {
+    id: "formato-4",
+    label: "Formato 4",
+    image: "/images/formats/formato-4.webp",
+    alt: "Exemplo de formato de foto Imagenow",
+  },
+] as const;
 
 export const contexts = [
   {
     id: "eventos-corporativos",
     title: "Eventos corporativos",
     text: "Para convenções, confraternizações, encontros internos, feiras e eventos de relacionamento. Criamos ativações que ajudam a gerar participação, registro e presença de marca durante o evento.",
-    image: "/images/card-eventos.webp",
-    imageAlt: "Ativação fotográfica da Imagenow em evento corporativo",
+    image: "/images/card-celebracoes.webp",
+    imageAlt: "Registro fotográfico da Imagenow em celebração social",
     tone: "corporate" as const,
     whatsappMessage:
       "Olá! Gostaria de conversar sobre soluções da Imagenow para um evento corporativo.",
@@ -282,8 +381,8 @@ export const contexts = [
     id: "acoes-de-marca",
     title: "Ações de marca",
     text: "Para lançamentos, campanhas e ativações promocionais. Soluções visuais que conectam público e marca com presença, conteúdo e lembrança no ponto da ação.",
-    image: "/images/card-de-acoes-da-marca.jpeg",
-    imageAlt: "Ativação de marca com registros visuais da Imagenow",
+    image: "/images/card-eventos.webp",
+    imageAlt: "Ativação fotográfica da Imagenow em evento corporativo",
     tone: "brand" as const,
     whatsappMessage:
       "Olá! Gostaria de conversar sobre soluções da Imagenow para uma ação de marca.",
@@ -292,8 +391,8 @@ export const contexts = [
     id: "celebracoes-sociais",
     title: "Celebrações sociais",
     text: "Para casamentos, aniversários e festas. Registros impressos, digitais e interativos que envolvem os convidados e seguem como lembrança depois do evento.",
-    image: "/images/card-celebracoes.webp",
-    imageAlt: "Registro fotográfico da Imagenow em celebração social",
+    image: "/images/card-de-acoes-da-marca.jpeg",
+    imageAlt: "Ativação de marca com registros visuais da Imagenow",
     tone: "social" as const,
     whatsappMessage:
       "Olá! Gostaria de conversar sobre soluções da Imagenow para uma celebração social.",

@@ -21,7 +21,7 @@ export const faqItems: FaqItem[] = [
     id: "ativacao",
     question: "O que é uma ativação fotográfica para eventos?",
     answer:
-      "Uma ativação fotográfica é uma solução pensada para gerar interação, registro e entrega visual dentro do evento. Ela pode envolver totem fotográfico, fotógrafo móvel, vídeos curtos, GIFs, bottons com foto, pôsteres, scrapbook ou outros formatos personalizados.",
+      "Uma ativação fotográfica é uma solução pensada para gerar interação, registro e entrega visual dentro do evento. Ela pode envolver totem fotográfico, fotógrafo móvel, vídeos curtos, GIFs, scrapbook, SignCam, Fotos com IA ou outros formatos personalizados.",
   },
   {
     id: "envio-digital",
@@ -45,13 +45,7 @@ export const faqItems: FaqItem[] = [
     id: "sociais",
     question: "A Imagenow atende casamentos, aniversários e eventos sociais?",
     answer:
-      "Sim. Além de eventos corporativos e ações de marca, a Imagenow também atende casamentos, aniversários, formaturas e celebrações sociais com formatos como Totem Fotográfico, Pola, Scrapbook, Áudio Guestbook, cabine fotográfica e outros registros personalizados.",
-  },
-  {
-    id: "cabine",
-    question: "Vocês fazem cabine fotográfica para casamento e eventos?",
-    answer:
-      "A Cabine Fotográfica Imagenow está em desenvolvimento. A proposta é oferecer um formato reservado, com design próprio, iluminação adequada e personalização para eventos sociais, corporativos e ações de marca.",
+      "Sim. Além de eventos corporativos e ações de marca, a Imagenow também atende casamentos, aniversários, formaturas e celebrações sociais com formatos como Totem Fotográfico, Pola, Scrapbook, Áudio Guestbook e outros registros personalizados.",
   },
   {
     id: "fora-sp",

@@ -10,9 +10,12 @@ export type Testimonial = {
 export const googleReviewsUrl =
   "https://www.google.com/maps/search/?api=1&query=Imagenow+Eventos+Calçada+dos+Mirtilos+10+Alphaville+Barueri";
 
+export const casamentosReviewsUrl = "https://cutt.ly/xkN1dSw";
+
 export const googleRatingSummary = {
   rating: 5.0,
-  countLabel: "108",
+  /** Texto de vitrine — “100+ avaliações” */
+  countLabel: "100+",
 } as const;
 
 export const testimonials: Testimonial[] = [

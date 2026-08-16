@@ -11,25 +11,38 @@ import "./ProcessSection.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+const LAST_STEP = processSteps.length - 1;
+
+function progressToIndex(progress: number) {
+  if (progress <= 0.04) return 0;
+  return Math.min(LAST_STEP, Math.max(0, Math.round(progress * LAST_STEP)));
+}
+
 export function ProcessSection() {
   const root = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
-  const [unlocked, setUnlocked] = useState(reduced ? processSteps.length - 1 : -1);
+  const [unlocked, setUnlocked] = useState(reduced ? LAST_STEP : 0);
 
   useGSAP(
     () => {
       if (!root.current) return;
 
-      const timeline = root.current.querySelector<HTMLElement>(".process__timeline");
-      const lineTrack = root.current.querySelector<HTMLElement>(".process__line");
-      const lineFill = root.current.querySelector<HTMLElement>(".process__line-fill");
-      const steps = gsap.utils.toArray<HTMLElement>(".process__step");
+      const section = root.current;
+      const timeline = section.querySelector<HTMLElement>(".process__timeline");
+      const lineTrack = section.querySelector<HTMLElement>(".process__line");
+      const lineFill = section.querySelector<HTMLElement>(".process__line-fill");
+      const steps = gsap.utils.toArray<HTMLElement>(".process__step", section);
       const markers = steps
         .map((step) => step.querySelector<HTMLElement>(".process__marker"))
         .filter((marker): marker is HTMLElement => Boolean(marker));
 
       const syncUnlocked = (index: number) => {
         setUnlocked((current) => (current === index ? current : index));
+      };
+
+      const applyProgress = (progress: number) => {
+        if (lineFill) gsap.set(lineFill, { scaleX: progress });
+        syncUnlocked(progressToIndex(progress));
       };
 
       const pinLineToMarkers = () => {
@@ -39,8 +52,10 @@ export function ProcessSection() {
         const firstBox = markers[0].getBoundingClientRect();
         const lastBox = markers[markers.length - 1].getBoundingClientRect();
 
-        const firstCenter = firstBox.left + firstBox.width / 2 - timelineBox.left + timeline.scrollLeft;
-        const lastCenter = lastBox.left + lastBox.width / 2 - timelineBox.left + timeline.scrollLeft;
+        const firstCenter =
+          firstBox.left + firstBox.width / 2 - timelineBox.left + timeline.scrollLeft;
+        const lastCenter =
+          lastBox.left + lastBox.width / 2 - timelineBox.left + timeline.scrollLeft;
 
         lineTrack.style.left = `${firstCenter}px`;
         lineTrack.style.right = "auto";
@@ -51,8 +66,7 @@ export function ProcessSection() {
       requestAnimationFrame(pinLineToMarkers);
 
       if (reduced) {
-        gsap.set(lineFill, { scaleX: 1 });
-        syncUnlocked(processSteps.length - 1);
+        applyProgress(1);
         return;
       }
 
@@ -64,38 +78,10 @@ export function ProcessSection() {
         ease: "power3.out",
         scrollTrigger: {
           trigger: ".process__intro",
-          start: "top 80%",
+          start: "top 85%",
           once: true,
         },
       });
-
-      if (lineFill && markers.length >= 2) {
-        gsap.fromTo(
-          lineFill,
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: timeline,
-              start: "top 70%",
-              end: "bottom 55%",
-              scrub: 0.35,
-              invalidateOnRefresh: true,
-              onUpdate: (self) => {
-                const last = Math.max(steps.length - 1, 1);
-                let maxIndex = -1;
-                for (let index = 0; index <= last; index += 1) {
-                  if (self.progress >= index / last - 0.001) maxIndex = index;
-                }
-                syncUnlocked(maxIndex);
-              },
-              onLeave: () => syncUnlocked(processSteps.length - 1),
-              onLeaveBack: () => syncUnlocked(-1),
-            },
-          },
-        );
-      }
 
       gsap.from(steps, {
         y: 18,
@@ -104,22 +90,74 @@ export function ProcessSection() {
         stagger: 0.08,
         ease: "power3.out",
         scrollTrigger: {
-          trigger: timeline,
-          start: "top 78%",
+          trigger: ".process__timeline-shell",
+          start: "top 90%",
           once: true,
         },
+      });
+
+      const mm = gsap.matchMedia();
+
+      // Desktop: pin da seção + scrub longo (experiência controlada)
+      mm.add("(min-width: 900px)", () => {
+        if (!lineFill) return;
+
+        applyProgress(0);
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top top+=72",
+          end: () => `+=${Math.round(window.innerHeight * 1.05)}`,
+          pin: true,
+          scrub: 0.5,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onRefresh: pinLineToMarkers,
+          onUpdate: (self) => applyProgress(self.progress),
+          onLeave: () => applyProgress(1),
+          onLeaveBack: () => applyProgress(0),
+        });
+      });
+
+      // Mobile: scrub na seção inteira (começa cedo) + sync no scroll horizontal
+      mm.add("(max-width: 899px)", () => {
+        if (!lineFill) return;
+
+        applyProgress(0);
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top 75%",
+          end: "bottom 20%",
+          scrub: 0.4,
+          invalidateOnRefresh: true,
+          onRefresh: pinLineToMarkers,
+          onUpdate: (self) => applyProgress(self.progress),
+          onLeave: () => applyProgress(1),
+          onLeaveBack: () => applyProgress(0),
+        });
+
+        const onTimelineScroll = () => {
+          pinLineToMarkers();
+          if (!timeline) return;
+          const max = timeline.scrollWidth - timeline.clientWidth;
+          if (max <= 8) return;
+          applyProgress(timeline.scrollLeft / max);
+        };
+
+        timeline?.addEventListener("scroll", onTimelineScroll, { passive: true });
+        return () => timeline?.removeEventListener("scroll", onTimelineScroll);
       });
 
       ScrollTrigger.addEventListener("refreshInit", pinLineToMarkers);
       ScrollTrigger.addEventListener("refresh", pinLineToMarkers);
       window.addEventListener("resize", pinLineToMarkers);
-      timeline?.addEventListener("scroll", pinLineToMarkers, { passive: true });
 
       return () => {
+        mm.revert();
         ScrollTrigger.removeEventListener("refreshInit", pinLineToMarkers);
         ScrollTrigger.removeEventListener("refresh", pinLineToMarkers);
         window.removeEventListener("resize", pinLineToMarkers);
-        timeline?.removeEventListener("scroll", pinLineToMarkers);
       };
     },
     { scope: root, dependencies: [reduced], revertOnUpdate: true },

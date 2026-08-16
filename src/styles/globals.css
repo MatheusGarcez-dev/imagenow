@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Agenor Neue";
+  src: url("../assets/fonts/AgenorNeue-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --ink: #080808;
   --ink-soft: #141414;
@@ -27,6 +35,7 @@
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-display: "Montserrat", system-ui, sans-serif;
   --font-syne: "Syne", system-ui, sans-serif;
+  --font-logo: "Agenor Neue", "Syne", system-ui, sans-serif;
   --gradient-media: linear-gradient(
     125deg,
     #1a0638 0%,
@@ -202,15 +211,15 @@ button {
   line-height: 1.12;
 }
 
-/* Syne: somente hero e assinatura de marca */
-.font-syne,
-.font-brand {
+/* Syne: hero; Agenor Neue: assinatura de marca */
+.font-syne {
   font-family: var(--font-syne);
   letter-spacing: -0.05em;
 }
 
 .font-brand {
-  font-weight: 800;
+  font-family: var(--font-logo);
+  letter-spacing: -0.02em;
   text-transform: lowercase;
 }
 

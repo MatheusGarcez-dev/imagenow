@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { navLinks, messages } from "@/data/site";
-import { createWhatsAppUrl } from "@/lib/whatsapp";
+import { navLinks } from "@/data/site";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import "./Header.css";
 
@@ -120,13 +119,12 @@ export function Header() {
 
           <div className="site-header__actions">
             <AnimatedButton
-              href={createWhatsAppUrl(messages.proposta)}
-              external
+              href="/galerias"
               variant="compact"
               className="site-header__cta"
-              aria-label="Solicitar proposta pelo WhatsApp"
+              aria-label="Acessar fotos das galerias"
             >
-              Solicitar proposta
+              Acessar fotos
             </AnimatedButton>
             <button
               ref={openRef}
@@ -177,13 +175,13 @@ export function Header() {
           </nav>
           <div className="mobile-menu__footer">
             <AnimatedButton
-              href={createWhatsAppUrl(messages.proposta)}
-              external
+              href="/galerias"
               variant="primary"
               className="mobile-menu__cta"
-              aria-label="Solicitar proposta pelo WhatsApp"
+              aria-label="Acessar fotos das galerias"
+              onClick={() => setOpen(false)}
             >
-              Solicitar proposta
+              Acessar fotos
             </AnimatedButton>
           </div>
         </div>

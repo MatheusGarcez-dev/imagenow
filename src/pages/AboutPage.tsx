@@ -11,9 +11,9 @@ import "./AboutPage.css";
 
 export function AboutPage() {
   usePageMeta({
-    title: "Quem somos | Imagenow",
+    title: "Quem Somos | Imagenow – Soluções para Eventos",
     description:
-      "Conheça a Imagenow, empresa de soluções para eventos corporativos, ações de marca e celebrações sociais, com formatos desenvolvidos para integrar design, operação e tecnologia.",
+      "Conheça a história da Imagenow, empresa especializada em soluções para eventos com equipamentos próprios, operação completa e ativações para marcas e celebrações.",
     path: "/quem-somos",
   });
 
@@ -34,7 +34,7 @@ export function AboutPage() {
                 <span aria-hidden="true">/</span>
                 <span>Quem somos</span>
               </nav>
-              <p className="about-page__eyebrow">Quem somos</p>
+              <p className="about-page__eyebrow">Institucional</p>
               <h1 className="font-display">{aboutContent.h1}</h1>
               <p className="about-page__subtitle">{aboutContent.subtitle}</p>
             </Reveal>
@@ -53,29 +53,50 @@ export function AboutPage() {
           </aside>
 
           <div className="about-page__body">
-            <RevealStagger variant="fade-up" stagger={0.06} duration={0.85}>
-              {aboutContent.paragraphs.map((paragraph, index) => (
-                <p
-                  key={paragraph.slice(0, 28)}
-                  className={index === 0 || index === 7 ? "about-page__lead" : undefined}
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </RevealStagger>
+            {aboutContent.sections.map((section, sectionIndex) => (
+              <section
+                key={section.id}
+                id={section.id}
+                className="about-page__section"
+                aria-labelledby={`${section.id}-title`}
+              >
+                <Reveal variant="fade-up" delay={sectionIndex * 0.04}>
+                  <h2 id={`${section.id}-title`} className="font-display about-page__h2">
+                    {section.h2}
+                  </h2>
+                </Reveal>
+                <RevealStagger variant="fade-up" stagger={0.05} duration={0.8}>
+                  {section.paragraphs.map((paragraph, index) => (
+                    <p
+                      key={paragraph.slice(0, 28)}
+                      className={
+                        sectionIndex === 0 && index === 0 ? "about-page__lead" : undefined
+                      }
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </RevealStagger>
+              </section>
+            ))}
+
             <Reveal variant="soft" delay={0.1}>
-              <p className="font-brand about-page__signature">{aboutContent.signature}</p>
+              <p className="about-page__signature" aria-label="imagenow. still happening.">
+                <span className="about-page__signature-brand">
+                  {aboutContent.signature.brand}
+                </span>
+                <span className="about-page__signature-dot">. </span>
+                <span className="about-page__signature-rest">
+                  {aboutContent.signature.rest}
+                </span>
+              </p>
             </Reveal>
 
             <Reveal variant="scale-blur" delay={0.05}>
-              <div
-                className="about-page__media"
-                role="img"
-                aria-label="Atmosfera visual do universo Imagenow"
-              >
+              <div className="about-page__media">
                 <img
                   src="/images/about-page-banner.png"
-                  alt=""
+                  alt="Equipe da Imagenow operando soluções fotográficas durante evento corporativo."
                   width={1600}
                   height={700}
                   loading="lazy"
@@ -84,8 +105,19 @@ export function AboutPage() {
               </div>
             </Reveal>
 
+            <Reveal variant="fade-up" className="about-page__related">
+              <p className="about-page__related-title">Continue explorando</p>
+              <ul>
+                {aboutContent.relatedLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link to={link.href}>{link.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+
             <Reveal variant="fade-up" className="about-page__actions">
-              <AnimatedButton href="/" variant="ghost" showIcon={false}>
+              <AnimatedButton href="/#quem-somos-preview" variant="ghost" showIcon={false}>
                 Voltar para a home
               </AnimatedButton>
               <AnimatedButton

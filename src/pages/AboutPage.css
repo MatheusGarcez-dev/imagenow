@@ -72,6 +72,17 @@
   max-width: 68ch;
 }
 
+.about-page__section {
+  margin-bottom: clamp(2rem, 4vw, 2.75rem);
+}
+
+.about-page__h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
 .about-page__body p {
   margin: 0 0 1.15rem;
   color: #3f3c38;
@@ -86,8 +97,56 @@
 
 .about-page__signature {
   margin: 2rem 0 !important;
-  font-size: 1.6rem !important;
+  font-family: var(--font-logo);
+  font-size: clamp(1.45rem, 3vw, 1.85rem) !important;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
   color: var(--magenta) !important;
+  line-height: 1.2;
+}
+
+.about-page__signature-brand {
+  font-weight: 700;
+}
+
+.about-page__signature-dot,
+.about-page__signature-rest {
+  font-weight: 400;
+}
+
+.about-page__related {
+  margin: 2.5rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(8, 8, 8, 0.08);
+}
+
+.about-page__related-title {
+  margin: 0 0 0.85rem !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6a655e !important;
+}
+
+.about-page__related ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+}
+
+.about-page__related a {
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.about-page__related a:hover {
+  color: var(--magenta);
 }
 
 .about-page__media {

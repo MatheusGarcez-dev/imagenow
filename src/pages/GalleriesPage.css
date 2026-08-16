@@ -47,6 +47,19 @@
   color: rgba(245, 244, 240, 0.72);
 }
 
+.galleries-page__availability {
+  margin: 0.85rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 180, 222, 0.92);
+}
+
+.galleries-page__fields {
+  display: grid;
+  gap: 1rem;
+}
+
 .galleries-page__body {
   padding-block: clamp(2rem, 5vw, 3.5rem) clamp(4rem, 8vw, 6rem);
   max-width: 40rem;

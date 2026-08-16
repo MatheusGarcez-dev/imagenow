@@ -16,11 +16,11 @@ export function BrandsSection() {
         <div className="brands-strip__rail">
           <p className="brands-strip__kicker">Prova em campo</p>
           <p className="brands-strip__title font-display">
-            Marcas que
+            Marcas e empresas
             <br />
-            já passaram
+            atendidas pela
             <br />
-            por nós.
+            Imagenow
           </p>
         </div>
 

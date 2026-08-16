@@ -1,6 +1,6 @@
 import { siteConfig } from "@/data/site";
 import { faqItems } from "@/data/faq";
-import { services } from "@/data/services";
+import { visibleServices } from "@/data/services";
 
 export function organizationJsonLd() {
   return {
@@ -16,7 +16,7 @@ export function organizationJsonLd() {
 }
 
 export function serviceJsonLd() {
-  return services.map((service) => ({
+  return visibleServices.map((service) => ({
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.name,
