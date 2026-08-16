@@ -14,7 +14,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const LAST_STEP = processSteps.length - 1;
 
 function progressToIndex(progress: number) {
-  if (progress <= 0.04) return 0;
+  if (progress <= 0.02) return 0;
   return Math.min(LAST_STEP, Math.max(0, Math.round(progress * LAST_STEP)));
 }
 
@@ -96,39 +96,16 @@ export function ProcessSection() {
         },
       });
 
-      const mm = gsap.matchMedia();
+      // Scrub amarrado à timeline — termina com os marcadores ainda visíveis
+      const shell = section.querySelector<HTMLElement>(".process__timeline-shell");
+      applyProgress(0);
 
-      // Desktop: pin da seção + scrub longo (experiência controlada)
-      mm.add("(min-width: 900px)", () => {
-        if (!lineFill) return;
-
-        applyProgress(0);
-
+      if (shell && lineFill) {
         ScrollTrigger.create({
-          trigger: section,
-          start: "top top+=72",
-          end: () => `+=${Math.round(window.innerHeight * 1.05)}`,
-          pin: true,
-          scrub: 0.5,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onRefresh: pinLineToMarkers,
-          onUpdate: (self) => applyProgress(self.progress),
-          onLeave: () => applyProgress(1),
-          onLeaveBack: () => applyProgress(0),
-        });
-      });
-
-      // Mobile: scrub na seção inteira (começa cedo) + sync no scroll horizontal
-      mm.add("(max-width: 899px)", () => {
-        if (!lineFill) return;
-
-        applyProgress(0);
-
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top 75%",
-          end: "bottom 20%",
+          trigger: shell,
+          start: "top 78%",
+          // Completa com a timeline mais baixa na tela (mais aparente)
+          end: "center 58%",
           scrub: 0.4,
           invalidateOnRefresh: true,
           onRefresh: pinLineToMarkers,
@@ -136,28 +113,27 @@ export function ProcessSection() {
           onLeave: () => applyProgress(1),
           onLeaveBack: () => applyProgress(0),
         });
+      }
 
-        const onTimelineScroll = () => {
-          pinLineToMarkers();
-          if (!timeline) return;
-          const max = timeline.scrollWidth - timeline.clientWidth;
-          if (max <= 8) return;
-          applyProgress(timeline.scrollLeft / max);
-        };
-
-        timeline?.addEventListener("scroll", onTimelineScroll, { passive: true });
-        return () => timeline?.removeEventListener("scroll", onTimelineScroll);
-      });
+      // Mobile: ao deslizar a timeline na horizontal, acompanha os passos
+      const onTimelineScroll = () => {
+        pinLineToMarkers();
+        if (!timeline) return;
+        const max = timeline.scrollWidth - timeline.clientWidth;
+        if (max <= 8) return;
+        applyProgress(timeline.scrollLeft / max);
+      };
 
       ScrollTrigger.addEventListener("refreshInit", pinLineToMarkers);
       ScrollTrigger.addEventListener("refresh", pinLineToMarkers);
       window.addEventListener("resize", pinLineToMarkers);
+      timeline?.addEventListener("scroll", onTimelineScroll, { passive: true });
 
       return () => {
-        mm.revert();
         ScrollTrigger.removeEventListener("refreshInit", pinLineToMarkers);
         ScrollTrigger.removeEventListener("refresh", pinLineToMarkers);
         window.removeEventListener("resize", pinLineToMarkers);
+        timeline?.removeEventListener("scroll", onTimelineScroll);
       };
     },
     { scope: root, dependencies: [reduced], revertOnUpdate: true },
