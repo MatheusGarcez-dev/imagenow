@@ -1,10 +1,10 @@
 export const brands = [
   "Adidas",
   "Itaú",
-  "Lacoste",
   "CAIXA",
-  "Levi's",
   "BRADESCO SHOP",
+  "Lacoste",
+  "Levi's",
   "LATAM",
   "Havaianas",
   "Piet",
@@ -42,20 +42,20 @@ export type BrandName = (typeof brands)[number];
 /**
  * Arquivos em /public/images/logos/{n}.png
  * Mapa explícito (a ordem da lista mudou; os PNGs mantêm a numeração original).
- * BRADESCO SHOP e IGUATEMI ainda precisam de arte própria.
+ * null = ainda sem arte própria (não entra no carrossel).
  */
-const logoFileByBrand: Record<BrandName, number> = {
+const logoFileByBrand: Record<BrandName, number | null> = {
   Adidas: 1,
   "Itaú": 2,
   Lacoste: 3,
   CAIXA: 4,
   "Levi's": 5,
-  "BRADESCO SHOP": 6,
+  "BRADESCO SHOP": 35,
   LATAM: 6,
   Havaianas: 7,
   Piet: 27,
   SmartFit: 8,
-  IGUATEMI: 11,
+  IGUATEMI: null,
   Pringles: 9,
   Stellantis: 10,
   "Cacau Show": 11,
@@ -82,6 +82,10 @@ const logoFileByBrand: Record<BrandName, number> = {
   Rotary: 33,
   Braschemical: 34,
 };
+
+export const visibleBrands = brands.filter(
+  (brand) => logoFileByBrand[brand] != null,
+);
 
 export function brandLogo(brand: BrandName) {
   const n = logoFileByBrand[brand] ?? 1;

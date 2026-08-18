@@ -13,8 +13,8 @@ export function FinalCTA() {
             <img src="/images/hero-bg.png" alt="" loading="lazy" />
           </div>
           <div className="final-cta__card">
-            <h2 id="final-cta-title" className="font-display">
-              Vamos conversar sobre o seu evento?
+            <h2 id="final-cta-title" className="font-display section-heading">
+              Vamos <span className="title-accent">conversar</span> sobre o seu evento?
             </h2>
             <p>
               Cada projeto tem um formato, um público e um objetivo. A Imagenow ajuda a

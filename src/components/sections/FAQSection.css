@@ -3,18 +3,8 @@
   padding: clamp(4.5rem, 9vw, 7rem) 0;
 }
 
-.faq__eyebrow {
-  margin: 0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--magenta);
-}
-
 .faq h2 {
-  margin: 0.75rem 0 0;
-  font-size: clamp(1.9rem, 4vw, 3rem);
+  margin: 0;
   max-width: 14ch;
 }
 

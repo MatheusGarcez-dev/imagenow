@@ -10,10 +10,6 @@ import "./ServicesCarousel.css";
 
 gsap.registerPlugin(useGSAP);
 
-function padIndex(index: number) {
-  return String(index + 1).padStart(2, "0");
-}
-
 function isImagenowStamp(badges?: string[]) {
   return Boolean(badges?.some((b) => /(desenvolvido|criado) pela imagenow/i.test(b)));
 }
@@ -49,23 +45,45 @@ export function ServicesCarousel() {
     const el = trackRef.current;
     if (!el) return;
     const card = el.querySelector<HTMLElement>(".service-card");
-    const step = card ? card.offsetWidth + 0 : el.clientWidth * 0.75;
-    el.scrollBy({ left: direction * step, behavior: "smooth" });
+    if (!card) {
+      el.scrollBy({ left: direction * el.clientWidth * 0.75, behavior: "smooth" });
+      return;
+    }
+    const styles = window.getComputedStyle(el);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+    el.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: "smooth" });
   };
 
   return (
     <section id="solucoes" className="services" aria-labelledby="services-title">
-      <div className="wrap">
+      <div className="wrap services__layout">
         <Reveal variant="fade-blur" className="services__intro">
-          <div className="services__copy">
-            <p className="services__eyebrow">O que oferecemos</p>
-            <h2 id="services-title" className="font-display services__title">
-              Soluções para <em>eventos</em>
-            </h2>
-            <p className="services__lead">
-              Cada formato pode ser personalizado de acordo com a identidade visual, o fluxo do
-              público, o espaço disponível e o tipo de entrega que o projeto precisa gerar.
-            </p>
+          <h2 id="services-title" className="font-display section-heading services__title">
+            <span className="title-accent">Soluções</span> para eventos
+          </h2>
+          <p className="services__lead">
+            Cada formato pode ser personalizado de acordo com a identidade visual, o fluxo do
+            público, o espaço disponível e o tipo de entrega que o projeto precisa gerar.
+          </p>
+        </Reveal>
+
+        <Reveal variant="soft" delay={0.12} className="services__shell">
+          <div
+            ref={trackRef}
+            className="services__track"
+            aria-label="Lista de soluções. Use as setas ou deslize na horizontal."
+          >
+            {visibleServices.map((service) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                expanded={expanded === service.id}
+                panelId={`${panelId}-${service.id}`}
+                onToggle={() =>
+                  setExpanded((current) => (current === service.id ? null : service.id))
+                }
+              />
+            ))}
           </div>
           <div className="services__nav" role="group" aria-label="Navegar soluções">
             <button
@@ -90,27 +108,6 @@ export function ServicesCarousel() {
         </Reveal>
       </div>
 
-      <div className="services__shell">
-        <div
-          ref={trackRef}
-          className="services__track"
-          aria-label="Lista de soluções. Use as setas ou deslize na horizontal."
-        >
-          {visibleServices.map((service, index) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              index={index}
-              expanded={expanded === service.id}
-              panelId={`${panelId}-${service.id}`}
-              onToggle={() =>
-                setExpanded((current) => (current === service.id ? null : service.id))
-              }
-            />
-          ))}
-        </div>
-      </div>
-
       <div className="sr-only">
         {visibleServices.map((service) => (
           <article key={`seo-${service.id}`} id={service.id}>
@@ -129,18 +126,16 @@ export function ServicesCarousel() {
 
 function ServiceCard({
   service,
-  index,
   expanded,
   panelId,
   onToggle,
 }: {
   service: Service;
-  index: number;
   expanded: boolean;
   panelId: string;
   onToggle: () => void;
 }) {
-  const detail = service.description.slice(1).join(" ");
+  const detail = service.description.join(" ");
   const stamped = isImagenowStamp(service.badges);
   const otherBadges =
     service.badges?.filter((b) => !/(desenvolvido|criado) pela imagenow/i.test(b)) ?? [];
@@ -151,22 +146,11 @@ function ServiceCard({
   const readyRef = useRef(false);
   const reduced = useReducedMotion();
 
-  const syncPanelHeight = useCallback(() => {
-    const panel = detailRef.current;
-    if (!panel || !expanded) return;
-    gsap.set(panel, { height: "auto" });
-  }, [expanded]);
-
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (expanded) {
-      video.currentTime = 0;
-      void video.play().catch(() => undefined);
-    } else {
-      video.pause();
-    }
-  }, [expanded, service.video]);
+    void video.play().catch(() => undefined);
+  }, [service.video]);
 
   useGSAP(
     () => {
@@ -251,9 +235,35 @@ function ServiceCard({
       className={`service-card${expanded ? " is-expanded" : ""}${stamped ? " has-stamp" : ""}`}
       aria-labelledby={`${panelId}-title`}
     >
-      <span className="service-card__index" aria-hidden="true">
-        {padIndex(index)}
-      </span>
+      <figure className="service-card__bg" aria-hidden="true">
+        {service.video ? (
+          <video
+            ref={videoRef}
+            className="service-card__video"
+            src={service.video}
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+          />
+        ) : (
+          <img
+            src={service.image}
+            alt=""
+            width={640}
+            height={800}
+            loading="lazy"
+            decoding="async"
+            style={
+              service.imagePosition
+                ? { objectPosition: service.imagePosition }
+                : undefined
+            }
+          />
+        )}
+      </figure>
+      <div className="service-card__scrim" aria-hidden="true" />
 
       {stamped ? (
         <img
@@ -268,11 +278,9 @@ function ServiceCard({
       ) : null}
 
       <div className="service-card__main">
-        <h3 id={`${panelId}-title`} className="font-display service-card__name">
-          {service.name}
-        </h3>
-        <p className="service-card__tag">{service.tagline}</p>
-        <p className="service-card__summary">{service.summary}</p>
+        <div className="service-card__summary-wrap">
+          <p className="service-card__summary">{service.summary}</p>
+        </div>
 
         {otherBadges.length ? (
           <ul className="service-card__badges">
@@ -290,6 +298,10 @@ function ServiceCard({
             ))}
           </ul>
         ) : null}
+
+        <h3 id={`${panelId}-title`} className="font-display service-card__name">
+          {service.name}
+        </h3>
 
         <div className="service-card__actions">
           <button
@@ -314,32 +326,6 @@ function ServiceCard({
         aria-label={`Detalhes de ${service.name}`}
       >
         <div ref={innerRef} className="service-card__detail-inner">
-          <figure className="service-card__media">
-            {service.video ? (
-              <video
-                ref={videoRef}
-                className="service-card__video"
-                src={service.video}
-                muted
-                loop
-                playsInline
-                autoPlay={expanded}
-                preload="metadata"
-                aria-label={service.imageAlt}
-                onLoadedData={syncPanelHeight}
-              />
-            ) : (
-              <img
-                src={service.image}
-                alt={service.imageAlt}
-                width={640}
-                height={800}
-                loading="lazy"
-                decoding="async"
-                onLoad={syncPanelHeight}
-              />
-            )}
-          </figure>
           {detail ? <p>{detail}</p> : null}
           <a
             className="service-card__cta"

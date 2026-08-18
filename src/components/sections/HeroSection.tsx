@@ -179,7 +179,6 @@ export function HeroSection() {
         <div className="hero__scrim" aria-hidden="true" />
 
         <div className="hero__content" ref={copyRef}>
-          {current.eyebrow ? <p className="hero__eyebrow">{current.eyebrow}</p> : null}
           <h1 className="font-display hero__title">
             {current.title}
             {current.titleAccent ? (

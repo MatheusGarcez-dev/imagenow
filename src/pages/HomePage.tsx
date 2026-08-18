@@ -4,6 +4,7 @@ import { IntroBentoSection } from "@/components/sections/IntroBentoSection";
 import { SocialProofSection } from "@/components/sections/SocialProofSection";
 import { ContextCardsSection } from "@/components/sections/ContextCardsSection";
 import { ServicesCarousel } from "@/components/sections/ServicesCarousel";
+import { PhotoFormatsSection } from "@/components/sections/PhotoFormatsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { AboutPreviewSection } from "@/components/sections/AboutPreviewSection";
 import { PartnershipsSection } from "@/components/sections/PartnershipsSection";
@@ -31,6 +32,7 @@ export function HomePage() {
       <SocialProofSection />
       <ContextCardsSection />
       <ServicesCarousel />
+      <PhotoFormatsSection />
       <ProcessSection />
       <AboutPreviewSection />
       <PartnershipsSection />

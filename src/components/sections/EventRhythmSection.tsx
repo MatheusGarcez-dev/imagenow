@@ -18,7 +18,7 @@ export function EventRhythmSection() {
             <div className="event-rhythm__scrim" />
           </div>
           <h2 id="rhythm-title" className="font-display event-rhythm__title">
-            Ativações que entram no ritmo do evento.
+            <span className="title-accent">Ativações</span> que entram no ritmo do evento
           </h2>
         </Reveal>
       </div>

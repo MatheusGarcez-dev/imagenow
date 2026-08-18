@@ -23,9 +23,8 @@ export function AboutPreviewSection() {
             <div className="about-preview__scrim" />
           </div>
           <div className="about-preview__banner-copy">
-            <p className="about-preview__eyebrow">Quem somos</p>
-            <h2 id="about-preview-title" className="font-display">
-              Muito além de equipamentos.
+            <h2 id="about-preview-title" className="font-display section-heading">
+              Muito além de <span className="title-accent">equipamentos</span>
             </h2>
           </div>
         </Reveal>

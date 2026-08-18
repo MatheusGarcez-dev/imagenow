@@ -17,11 +17,11 @@ function BrandMark({ brand, isClone }: { brand: BrandName; isClone: boolean }) {
     <img
       src={brandLogo(brand)}
       alt={isClone ? "" : brandAlt(brand)}
-      width={160}
-      height={64}
+      width={480}
+      height={192}
       loading="lazy"
       decoding="async"
-      className="brand-marquee__logo"
+      className={`brand-marquee__logo${brand === "Stellantis" ? " is-stellantis" : ""}`}
       onError={() => setFailed(true)}
     />
   );

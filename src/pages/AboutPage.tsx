@@ -34,7 +34,6 @@ export function AboutPage() {
                 <span aria-hidden="true">/</span>
                 <span>Quem somos</span>
               </nav>
-              <p className="about-page__eyebrow">Institucional</p>
               <h1 className="font-display">{aboutContent.h1}</h1>
               <p className="about-page__subtitle">{aboutContent.subtitle}</p>
             </Reveal>

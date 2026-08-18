@@ -123,7 +123,6 @@ export function GalleriesPage() {
                 <span aria-hidden="true">/</span>
                 <span>Fotos</span>
               </nav>
-              <p className="galleries-page__eyebrow">Galerias de eventos</p>
               <h1 className="font-display">Fotos do seu evento</h1>
               <p className="galleries-page__lead">
                 Acesse as fotos do evento usando a data e a senha fornecida pela Imagenow.

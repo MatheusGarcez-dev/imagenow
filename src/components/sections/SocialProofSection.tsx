@@ -30,14 +30,14 @@ export function SocialProofSection() {
 
   return (
     <section className="social-proof" aria-labelledby="social-proof-title">
-      <div className="wrap">
+      <div className="wrap social-proof__layout">
         <Reveal variant="fade-blur" className="social-proof__header">
           <p className="social-proof__rating" aria-label="5.0 no Google, mais de 100 avaliações">
             ⭐ {googleRatingSummary.rating.toFixed(1)} no Google •{" "}
             {googleRatingSummary.countLabel} avaliações
           </p>
-          <h2 id="social-proof-title" className="font-display">
-            Confiança construída em eventos reais.
+          <h2 id="social-proof-title" className="font-display section-heading">
+            <span className="title-accent">Confiança</span> construída em eventos reais
           </h2>
           <p className="social-proof__note">
             Avaliações reais de quem já levou a Imagenow para o evento.
@@ -73,7 +73,9 @@ export function SocialProofSection() {
             </ul>
           </div>
         </Reveal>
+      </div>
 
+      <div className="wrap">
         <Reveal variant="fade-up" delay={0.16} className="social-proof__cta">
           <AnimatedButton
             href={googleReviewsUrl}
@@ -82,7 +84,7 @@ export function SocialProofSection() {
             rel="noopener noreferrer"
             variant="outline"
           >
-            Ver mais avaliações no Google
+            + Avaliações Google
           </AnimatedButton>
           <AnimatedButton
             href={casamentosReviewsUrl}
@@ -91,7 +93,7 @@ export function SocialProofSection() {
             rel="noopener noreferrer"
             variant="outline"
           >
-            Avaliações no Casamentos.com
+            + Avaliações Casamentos.com.br
           </AnimatedButton>
         </Reveal>
       </div>

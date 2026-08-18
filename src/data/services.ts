@@ -7,6 +7,8 @@ export type Service = {
   badges?: string[];
   image: string;
   imageAlt: string;
+  /** Enquadramento da foto no card (object-position) */
+  imagePosition?: string;
   /** Vídeo exibido no card expandido (substitui a imagem quando presente) */
   video?: string;
   whatsappMessage: string;
@@ -36,8 +38,9 @@ export const services: Service[] = [
     ],
     badges: ["Desenvolvido pela Imagenow"],
     photoFormats: true,
-    image: "/images/services/totem-fotografico.png",
-    imageAlt: "Totem Fotográfico da Imagenow com luz articulada em evento",
+    image: "/images/services/totem-fotografico.jpg",
+    imageAlt: "Totem Fotográfico da Imagenow em evento, com convidados interagindo na tela",
+    imagePosition: "left center",
     whatsappMessage:
       "Olá! Gostaria de conversar sobre o Totem Fotográfico para um evento.",
     keywords: ["totem fotográfico", "foto impressa na hora", "eventos corporativos"],
@@ -338,33 +341,76 @@ export const services: Service[] = [
 
 export const visibleServices = services.filter((service) => !service.hidden);
 
-/** Placeholders dos formatos de foto — substitua em /public/images/formats/ */
-export const photoFormats = [
+export type PhotoFormatLayout =
+  | "strips"
+  | "strips-slim"
+  | "polaroid"
+  | "polaroid-slim"
+  | "mini-polaroid"
+  | "sheet-3"
+  | "sheet-1"
+  | "sheet-4";
+
+export type PhotoFormat = {
+  id: string;
+  name: string;
+  detail: string;
+  layout: PhotoFormatLayout;
+  preferred?: boolean;
+};
+
+export const photoFormats: PhotoFormat[] = [
   {
-    id: "formato-1",
-    label: "Formato 1",
-    image: "/images/formats/formato-1.webp",
-    alt: "Exemplo de formato de foto Imagenow",
+    id: "tirinhas",
+    name: "Tirinhas",
+    detail: "O clássico do totem. Várias poses na mesma tira.",
+    layout: "strips",
+    preferred: true,
   },
   {
-    id: "formato-2",
-    label: "Formato 2",
-    image: "/images/formats/formato-2.webp",
-    alt: "Exemplo de formato de foto Imagenow",
+    id: "polaroid",
+    name: "Polaroid",
+    detail: "Foto única com a borda branca que vira lembrança.",
+    layout: "polaroid",
+    preferred: true,
   },
   {
-    id: "formato-3",
-    label: "Formato 3",
-    image: "/images/formats/formato-3.webp",
-    alt: "Exemplo de formato de foto Imagenow",
+    id: "tirinhas-slim",
+    name: "Tirinhas Slim",
+    detail: "Mais estreita, cabe fácil no bolso e no convite.",
+    layout: "strips-slim",
   },
   {
-    id: "formato-4",
-    label: "Formato 4",
-    image: "/images/formats/formato-4.webp",
-    alt: "Exemplo de formato de foto Imagenow",
+    id: "mini-polaroid",
+    name: "Mini Polaroid 7x5",
+    detail: "Quatro poses pequenas em uma folha só.",
+    layout: "mini-polaroid",
   },
-] as const;
+  {
+    id: "polaroid-slim",
+    name: "Polaroid Slim",
+    detail: "O recorte polaroid em um formato mais fino.",
+    layout: "polaroid-slim",
+  },
+  {
+    id: "sheet-3",
+    name: "10x15, 3 poses",
+    detail: "Uma foto maior e duas menores no mesmo papel.",
+    layout: "sheet-3",
+  },
+  {
+    id: "sheet-1",
+    name: "10x15, 1 pose",
+    detail: "Uma foto em tamanho cheio para guardar ou emoldurar.",
+    layout: "sheet-1",
+  },
+  {
+    id: "sheet-4",
+    name: "10x15, 4 poses",
+    detail: "Quatro recortes iguais na folha 10x15.",
+    layout: "sheet-4",
+  },
+];
 
 export const contexts = [
   {

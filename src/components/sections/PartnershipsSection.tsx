@@ -27,9 +27,8 @@ export function PartnershipsSection() {
             />
           </div>
           <div className="partnerships__hero-content">
-            <p className="partnerships__eyebrow">Parcerias</p>
-            <h2 id="partnerships-title" className="font-display">
-              Imagenow para o seu negócio.
+            <h2 id="partnerships-title" className="font-display section-heading">
+              Imagenow para o seu <span className="title-accent">negócio</span>
             </h2>
             <p>
               Soluções integradas para ampliar seu portfólio, fortalecer sua entrega e

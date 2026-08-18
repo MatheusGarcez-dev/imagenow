@@ -40,8 +40,16 @@ export function ProcessSection() {
         setUnlocked((current) => (current === index ? current : index));
       };
 
+      const isMobileLayout = () => window.matchMedia("(max-width: 899px)").matches;
+
       const applyProgress = (progress: number) => {
-        if (lineFill) gsap.set(lineFill, { scaleX: progress });
+        if (lineFill) {
+          if (isMobileLayout()) {
+            gsap.set(lineFill, { scaleY: progress, scaleX: 1 });
+          } else {
+            gsap.set(lineFill, { scaleX: progress, scaleY: 1 });
+          }
+        }
         syncUnlocked(progressToIndex(progress));
       };
 
@@ -52,14 +60,31 @@ export function ProcessSection() {
         const firstBox = markers[0].getBoundingClientRect();
         const lastBox = markers[markers.length - 1].getBoundingClientRect();
 
+        if (isMobileLayout()) {
+          const firstCenter = firstBox.top + firstBox.height / 2 - timelineBox.top;
+          const lastCenter = lastBox.top + lastBox.height / 2 - timelineBox.top;
+          const x = firstBox.left + firstBox.width / 2 - timelineBox.left;
+
+          lineTrack.style.top = `${firstCenter}px`;
+          lineTrack.style.left = `${x}px`;
+          lineTrack.style.width = "1px";
+          lineTrack.style.height = `${Math.max(0, lastCenter - firstCenter)}px`;
+          lineTrack.style.right = "auto";
+          lineTrack.style.transform = "translateX(-50%)";
+          return;
+        }
+
         const firstCenter =
           firstBox.left + firstBox.width / 2 - timelineBox.left + timeline.scrollLeft;
         const lastCenter =
           lastBox.left + lastBox.width / 2 - timelineBox.left + timeline.scrollLeft;
 
+        lineTrack.style.top = "";
         lineTrack.style.left = `${firstCenter}px`;
         lineTrack.style.right = "auto";
         lineTrack.style.width = `${Math.max(0, lastCenter - firstCenter)}px`;
+        lineTrack.style.height = "";
+        lineTrack.style.transform = "";
       };
 
       pinLineToMarkers();
@@ -103,9 +128,8 @@ export function ProcessSection() {
       if (shell && lineFill) {
         ScrollTrigger.create({
           trigger: shell,
-          start: "top 78%",
-          // Completa com a timeline mais baixa na tela (mais aparente)
-          end: "center 58%",
+          start: "top 82%",
+          end: isMobileLayout() ? "bottom 28%" : "center 58%",
           scrub: 0.4,
           invalidateOnRefresh: true,
           onRefresh: pinLineToMarkers,
@@ -115,10 +139,9 @@ export function ProcessSection() {
         });
       }
 
-      // Mobile: ao deslizar a timeline na horizontal, acompanha os passos
       const onTimelineScroll = () => {
         pinLineToMarkers();
-        if (!timeline) return;
+        if (!timeline || isMobileLayout()) return;
         const max = timeline.scrollWidth - timeline.clientWidth;
         if (max <= 8) return;
         applyProgress(timeline.scrollLeft / max);
@@ -148,10 +171,8 @@ export function ProcessSection() {
     >
       <div className="wrap">
         <div className="process__intro">
-          <p className="process__eyebrow">Processo</p>
-          <h2 id="process-title" className="font-display process__headline">
-            Do briefing à entrega, tudo pensado para{" "}
-            <strong>funcionar no evento.</strong>
+          <h2 id="process-title" className="font-display section-heading process__headline">
+            Do <span className="title-accent">briefing</span> à entrega, tudo pensado para funcionar no evento
           </h2>
           <p className="process__lead">
             Entendemos o contexto, indicamos o formato ideal, personalizamos a entrega e

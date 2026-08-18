@@ -24,9 +24,8 @@ export function FAQSection() {
     <section className="faq" aria-labelledby="faq-title">
       <div className="wrap">
         <Reveal variant="fade-blur" className="faq__intro">
-          <p className="faq__eyebrow">Dúvidas frequentes</p>
-          <h2 id="faq-title" className="font-display">
-            Antes de solicitar sua proposta
+          <h2 id="faq-title" className="font-display section-heading">
+            Antes de solicitar sua <span className="title-accent">proposta</span>
           </h2>
           <p className="faq__lead">
             Respostas rápidas sobre soluções fotográficas, ativações visuais e formatos

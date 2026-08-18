@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Images } from "lucide-react";
-import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { contexts } from "@/data/services";
 import { Reveal } from "@/components/ui/Reveal";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -63,9 +62,8 @@ export function ContextCardsSection() {
     <section className="contexts" aria-labelledby="contexts-title">
       <div className="wrap">
         <Reveal variant="fade-up" className="contexts__header">
-          <p className="contexts__eyebrow">Atuação</p>
-          <h2 id="contexts-title" className="font-display contexts__title">
-            Experiências para diferentes contextos.
+          <h2 id="contexts-title" className="font-display section-heading contexts__title">
+            <span className="title-accent">Experiências</span> para diferentes contextos
           </h2>
         </Reveal>
       </div>
@@ -99,11 +97,10 @@ export function ContextCardsSection() {
           }}
         >
           <a
-            href={createWhatsAppUrl(current.whatsappMessage)}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#solucoes"
             className="contexts-carousel__card"
             aria-labelledby={labelId}
+            aria-label={`${current.title}. Ir para as soluções.`}
           >
             {contexts.map((item, index) => (
               <div
@@ -178,11 +175,9 @@ export function ContextCardsSection() {
           <a
             key={item.id}
             role="listitem"
-            href={createWhatsAppUrl(item.whatsappMessage)}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#solucoes"
             className={`contexts__panel contexts__panel--${item.tone}`}
-            aria-label={`${item.title}. ${item.text} Abrir conversa no WhatsApp.`}
+            aria-label={`${item.title}. Ir para as soluções.`}
           >
             <div className="contexts__media" aria-hidden="true">
               <img
@@ -203,7 +198,7 @@ export function ContextCardsSection() {
               <div className="contexts__panel-text-wrap">
                 <p className="contexts__panel-text">{item.text}</p>
                 <span className="contexts__cta">
-                  Conversar sobre este contexto
+                  Ver soluções
                   <span aria-hidden="true">→</span>
                 </span>
               </div>
