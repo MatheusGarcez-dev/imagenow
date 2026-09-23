@@ -1,0 +1,144 @@
+.partnerships {
+  background: var(--paper);
+  padding: clamp(4rem, 8vw, 6rem) 0;
+}
+
+.partnerships__hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--radius-xl);
+  background: #0a0614;
+  color: var(--paper);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  transition: padding 0.45s var(--ease);
+}
+
+.partnerships__aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.partnerships__hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.partnerships__hero h2 {
+  margin: 0;
+  max-width: 14ch;
+}
+
+.partnerships__hero-content > p {
+  margin: 1rem 0 0;
+  max-width: 48ch;
+  color: rgba(245, 244, 240, 0.72);
+}
+
+.partnerships__actions {
+  margin-top: 1.75rem;
+}
+
+.partnerships__expand {
+  margin-top: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  animation: partnerships-expand-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.partnerships__expand[hidden] {
+  display: none;
+}
+
+.partnerships__expand-inner {
+  display: grid;
+  gap: 0;
+}
+
+.partnerships__expand h3 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  color: #fff;
+}
+
+.partnerships__sub {
+  margin: 0.45rem 0 0;
+  font-style: italic;
+  color: color-mix(in srgb, var(--magenta) 80%, #fff);
+}
+
+.partnerships__copy {
+  margin-top: 1.15rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.partnerships__copy p {
+  margin: 0;
+  max-width: 68ch;
+  color: rgba(245, 244, 240, 0.68);
+  line-height: 1.6;
+}
+
+.partnerships__points-title {
+  margin: 1.75rem 0 0;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.partnerships__points {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partnerships__points li {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.partnerships__points h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.partnerships__points p {
+  margin: 0.35rem 0 0;
+  color: rgba(245, 244, 240, 0.62);
+  font-size: 0.95rem;
+}
+
+.partnerships__cta {
+  margin-top: 1.75rem;
+  width: fit-content;
+}
+
+@keyframes partnerships-expand-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 800px) {
+  .partnerships__points {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partnerships__expand {
+    animation: none;
+  }
+}

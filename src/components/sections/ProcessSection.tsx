@@ -1,0 +1,220 @@
+import { useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { processSteps } from "@/data/services";
+import { messages } from "@/data/site";
+import { createWhatsAppUrl } from "@/lib/whatsapp";
+import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import "./ProcessSection.css";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+const LAST_STEP = processSteps.length - 1;
+
+function progressToIndex(progress: number) {
+  if (progress <= 0.02) return 0;
+  return Math.min(LAST_STEP, Math.max(0, Math.round(progress * LAST_STEP)));
+}
+
+export function ProcessSection() {
+  const root = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+  const [unlocked, setUnlocked] = useState(reduced ? LAST_STEP : 0);
+
+  useGSAP(
+    () => {
+      if (!root.current) return;
+
+      const section = root.current;
+      const timeline = section.querySelector<HTMLElement>(".process__timeline");
+      const lineTrack = section.querySelector<HTMLElement>(".process__line");
+      const lineFill = section.querySelector<HTMLElement>(".process__line-fill");
+      const steps = gsap.utils.toArray<HTMLElement>(".process__step", section);
+      const markers = steps
+        .map((step) => step.querySelector<HTMLElement>(".process__marker"))
+        .filter((marker): marker is HTMLElement => Boolean(marker));
+
+      const syncUnlocked = (index: number) => {
+        setUnlocked((current) => (current === index ? current : index));
+      };
+
+      const isMobileLayout = () => window.matchMedia("(max-width: 899px)").matches;
+
+      const applyProgress = (progress: number) => {
+        if (lineFill) {
+          if (isMobileLayout()) {
+            gsap.set(lineFill, { scaleY: progress, scaleX: 1 });
+          } else {
+            gsap.set(lineFill, { scaleX: progress, scaleY: 1 });
+          }
+        }
+        syncUnlocked(progressToIndex(progress));
+      };
+
+      const pinLineToMarkers = () => {
+        if (!timeline || !lineTrack || markers.length < 2) return;
+
+        const timelineBox = timeline.getBoundingClientRect();
+        const firstBox = markers[0].getBoundingClientRect();
+        const lastBox = markers[markers.length - 1].getBoundingClientRect();
+
+        if (isMobileLayout()) {
+          const firstCenter = firstBox.top + firstBox.height / 2 - timelineBox.top;
+          const lastCenter = lastBox.top + lastBox.height / 2 - timelineBox.top;
+          const x = firstBox.left + firstBox.width / 2 - timelineBox.left;
+
+          lineTrack.style.top = `${firstCenter}px`;
+          lineTrack.style.left = `${x}px`;
+          lineTrack.style.width = "1px";
+          lineTrack.style.height = `${Math.max(0, lastCenter - firstCenter)}px`;
+          lineTrack.style.right = "auto";
+          lineTrack.style.transform = "translateX(-50%)";
+          return;
+        }
+
+        const firstCenter =
+          firstBox.left + firstBox.width / 2 - timelineBox.left + timeline.scrollLeft;
+        const lastCenter =
+          lastBox.left + lastBox.width / 2 - timelineBox.left + timeline.scrollLeft;
+
+        lineTrack.style.top = "";
+        lineTrack.style.left = `${firstCenter}px`;
+        lineTrack.style.right = "auto";
+        lineTrack.style.width = `${Math.max(0, lastCenter - firstCenter)}px`;
+        lineTrack.style.height = "";
+        lineTrack.style.transform = "";
+      };
+
+      pinLineToMarkers();
+      requestAnimationFrame(pinLineToMarkers);
+
+      if (reduced) {
+        applyProgress(1);
+        return;
+      }
+
+      gsap.from(".process__intro > *", {
+        y: 24,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".process__intro",
+          start: "top 85%",
+          once: true,
+        },
+      });
+
+      gsap.from(steps, {
+        y: 18,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.08,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".process__timeline-shell",
+          start: "top 90%",
+          once: true,
+        },
+      });
+
+      // Scrub amarrado à timeline — termina com os marcadores ainda visíveis
+      const shell = section.querySelector<HTMLElement>(".process__timeline-shell");
+      applyProgress(0);
+
+      if (shell && lineFill) {
+        ScrollTrigger.create({
+          trigger: shell,
+          start: "top 82%",
+          end: isMobileLayout() ? "bottom 28%" : "center 58%",
+          scrub: 0.4,
+          invalidateOnRefresh: true,
+          onRefresh: pinLineToMarkers,
+          onUpdate: (self) => applyProgress(self.progress),
+          onLeave: () => applyProgress(1),
+          onLeaveBack: () => applyProgress(0),
+        });
+      }
+
+      const onTimelineScroll = () => {
+        pinLineToMarkers();
+        if (!timeline || isMobileLayout()) return;
+        const max = timeline.scrollWidth - timeline.clientWidth;
+        if (max <= 8) return;
+        applyProgress(timeline.scrollLeft / max);
+      };
+
+      ScrollTrigger.addEventListener("refreshInit", pinLineToMarkers);
+      ScrollTrigger.addEventListener("refresh", pinLineToMarkers);
+      window.addEventListener("resize", pinLineToMarkers);
+      timeline?.addEventListener("scroll", onTimelineScroll, { passive: true });
+
+      return () => {
+        ScrollTrigger.removeEventListener("refreshInit", pinLineToMarkers);
+        ScrollTrigger.removeEventListener("refresh", pinLineToMarkers);
+        window.removeEventListener("resize", pinLineToMarkers);
+        timeline?.removeEventListener("scroll", onTimelineScroll);
+      };
+    },
+    { scope: root, dependencies: [reduced], revertOnUpdate: true },
+  );
+
+  return (
+    <section
+      id="como-funciona"
+      ref={root}
+      className="process"
+      aria-labelledby="process-title"
+    >
+      <div className="wrap">
+        <div className="process__intro">
+          <h2 id="process-title" className="font-display section-heading process__headline">
+            Do <span className="title-accent">briefing</span> à entrega, tudo pensado para funcionar no evento
+          </h2>
+          <p className="process__lead">
+            Entendemos o contexto, indicamos o formato ideal, personalizamos a entrega e
+            operamos no dia com equipe preparada.
+          </p>
+        </div>
+      </div>
+
+      <div className="process__timeline-shell">
+        <div className="process__timeline" tabIndex={0} aria-label="Etapas do processo">
+          <div className="process__line" aria-hidden="true">
+            <span className="process__line-fill" />
+          </div>
+          <ol>
+            {processSteps.map((step, index) => (
+              <li
+                key={step.n}
+                className={`process__step${index <= unlocked ? " is-active" : ""}`}
+              >
+                <span className="process__marker" aria-hidden="true">
+                  <span className="process__n font-display">{step.n}</span>
+                </span>
+                <div className="process__step-copy">
+                  <h3 className="font-display">{step.title}</h3>
+                  <p>{step.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      <div className="wrap process__cta">
+        <AnimatedButton
+          href={createWhatsAppUrl(messages.evento)}
+          external
+          variant="primary"
+          aria-label="Falar sobre meu evento no WhatsApp"
+        >
+          Falar sobre meu evento
+        </AnimatedButton>
+      </div>
+    </section>
+  );
+}
