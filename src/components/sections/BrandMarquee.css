@@ -1,0 +1,139 @@
+.brand-marquee {
+  --marquee-duration: 50s;
+  width: 100%;
+  min-width: 0;
+}
+
+.brand-marquee__viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.brand-marquee__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  gap: clamp(3.5rem, 7vw, 5.5rem);
+  margin: 0;
+  padding: 0.55rem 0;
+  list-style: none;
+  animation: brand-marquee-left var(--marquee-duration) linear infinite;
+}
+
+.brand-marquee--right .brand-marquee__track {
+  animation-name: brand-marquee-right;
+}
+
+.brand-marquee__item {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.brand-marquee__logo {
+  display: block;
+  height: clamp(9.75rem, 16.5vw, 12.75rem);
+  width: auto;
+  max-width: 33rem;
+  object-fit: contain;
+  object-position: center;
+  filter: grayscale(1);
+  opacity: 0.92;
+  background: none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.35s var(--ease);
+}
+
+.brand-marquee__item:hover .brand-marquee__logo {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+.brand-marquee__logo.is-stellantis {
+  height: clamp(5.25rem, 8.5vw, 6.75rem);
+  max-width: 18rem;
+}
+
+.brand-marquee__word {
+  font-family: var(--font-syne);
+  font-size: clamp(2.85rem, 4.5vw, 3.45rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+.brand-marquee:hover .brand-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes brand-marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes brand-marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-marquee__track {
+    gap: 2.75rem;
+  }
+
+  .brand-marquee__logo {
+    height: 8.25rem;
+    max-width: 25.5rem;
+  }
+
+  .brand-marquee__logo.is-stellantis {
+    height: 4.5rem;
+    max-width: 14rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-marquee__viewport {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .brand-marquee__track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+    row-gap: 1.75rem;
+  }
+
+  .brand-marquee__item:hover .brand-marquee__logo {
+    transform: none;
+  }
+}

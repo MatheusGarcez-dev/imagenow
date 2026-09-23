@@ -1,0 +1,82 @@
+.about-preview {
+  background: var(--paper);
+  color: var(--ink);
+  padding: clamp(3.5rem, 7vw, 5.5rem) 0;
+}
+
+.about-preview__frame {
+  width: min(100% - clamp(1.5rem, 4vw, 2.5rem), 1480px);
+  margin-inline: auto;
+}
+
+.about-preview__banner {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1983 / 793;
+  min-height: 11rem;
+  border-radius: var(--radius-xl, clamp(1.5rem, 3.5vw, 2.25rem));
+  display: flex;
+  align-items: flex-end;
+  color: var(--paper);
+  isolation: isolate;
+}
+
+.about-preview__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.about-preview__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.about-preview__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 8, 8, 0.1) 0%, rgba(8, 8, 8, 0.5) 55%, rgba(8, 8, 8, 0.78) 100%),
+    linear-gradient(90deg, rgba(8, 8, 8, 0.45) 0%, transparent 55%);
+}
+
+.about-preview__banner-copy {
+  position: relative;
+  z-index: 1;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  width: min(100%, 38rem);
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.about-preview__banner-copy h2 {
+  margin: 0;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+.about-preview__copy {
+  margin-top: clamp(1.5rem, 3.5vw, 2.25rem);
+  display: grid;
+  gap: 1rem;
+  max-width: 58ch;
+}
+
+.about-preview__copy p {
+  margin: 0;
+  color: #5c5852;
+  font-size: 1.05rem;
+}
+
+.about-preview__copy p:first-child {
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.about-preview__copy .btn-animated {
+  margin-top: 0.5rem;
+  justify-self: start;
+}
+

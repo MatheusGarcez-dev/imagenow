@@ -1,0 +1,433 @@
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { visibleServices, type Service } from "@/data/services";
+import { createWhatsAppUrl } from "@/lib/whatsapp";
+import { Reveal } from "@/components/ui/Reveal";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import "./ServicesCarousel.css";
+
+gsap.registerPlugin(useGSAP);
+
+function isImagenowStamp(badges?: string[]) {
+  return Boolean(badges?.some((b) => /(desenvolvido|criado) pela imagenow/i.test(b)));
+}
+
+function normalizeSearch(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}
+
+function serviceMatchesQuery(service: Service, query: string) {
+  const haystack = normalizeSearch(
+    [
+      service.name,
+      service.tagline,
+      service.summary,
+      ...(service.keywords ?? []),
+      ...(service.badges ?? []),
+    ].join(" "),
+  );
+  return haystack.includes(query);
+}
+
+export function ServicesCarousel() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const panelId = useId();
+  const searchId = useId();
+
+  const normalizedQuery = normalizeSearch(query.trim());
+  const filteredServices = useMemo(
+    () =>
+      normalizedQuery
+        ? visibleServices.filter((service) => serviceMatchesQuery(service, normalizedQuery))
+        : visibleServices,
+    [normalizedQuery],
+  );
+
+  const updateArrows = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setCanPrev(el.scrollLeft > 8);
+    setCanNext(el.scrollLeft < max - 8);
+  }, []);
+
+  useEffect(() => {
+    if (expanded && !filteredServices.some((service) => service.id === expanded)) {
+      setExpanded(null);
+    }
+  }, [expanded, filteredServices]);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) {
+      setCanPrev(false);
+      setCanNext(false);
+      return;
+    }
+    el.scrollLeft = 0;
+    updateArrows();
+    el.addEventListener("scroll", updateArrows, { passive: true });
+    window.addEventListener("resize", updateArrows);
+    return () => {
+      el.removeEventListener("scroll", updateArrows);
+      window.removeEventListener("resize", updateArrows);
+    };
+  }, [updateArrows, expanded, normalizedQuery, filteredServices.length]);
+
+  const scrollByCard = (direction: -1 | 1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>(".service-card");
+    if (!card) {
+      el.scrollBy({ left: direction * el.clientWidth * 0.75, behavior: "smooth" });
+      return;
+    }
+    const styles = window.getComputedStyle(el);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+    el.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: "smooth" });
+  };
+
+  return (
+    <section id="solucoes" className="services" aria-labelledby="services-title">
+      <div className="wrap services__layout">
+        <Reveal variant="fade-blur" className="services__intro">
+          <h2 id="services-title" className="font-display section-heading services__title">
+            <span className="title-accent">Soluções</span> para eventos
+          </h2>
+          <p className="services__lead">
+            Cada formato pode ser personalizado de acordo com a identidade visual, o fluxo do
+            público, o espaço disponível e o tipo de entrega que o projeto precisa gerar.
+          </p>
+        </Reveal>
+
+        <Reveal variant="soft" delay={0.12} className="services__shell">
+          <div className="services__search">
+            <label className="sr-only" htmlFor={searchId}>
+              Buscar equipamento
+            </label>
+            <Search className="services__search-icon" size={18} strokeWidth={2} aria-hidden />
+            <input
+              id={searchId}
+              type="search"
+              className="services__search-input"
+              placeholder="Buscar equipamento"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              autoComplete="off"
+              enterKeyHint="search"
+            />
+            {query ? (
+              <button
+                type="button"
+                className="services__search-clear"
+                aria-label="Limpar busca"
+                onClick={() => setQuery("")}
+              >
+                <X size={16} strokeWidth={2} aria-hidden />
+              </button>
+            ) : null}
+          </div>
+
+          {filteredServices.length === 0 ? (
+            <p className="services__empty" role="status">
+              Nenhum equipamento encontrado para “{query.trim()}”.
+            </p>
+          ) : (
+          <div className="services__stage">
+            <div
+              ref={trackRef}
+              className="services__track"
+              aria-label="Lista de soluções. Use as setas ou deslize na horizontal."
+            >
+              {filteredServices.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  expanded={expanded === service.id}
+                  panelId={`${panelId}-${service.id}`}
+                  onToggle={() =>
+                    setExpanded((current) => (current === service.id ? null : service.id))
+                  }
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              className="services__arrow services__arrow--prev"
+              aria-label="Soluções anteriores"
+              disabled={!canPrev}
+              onClick={() => scrollByCard(-1)}
+            >
+              <ChevronLeft size={28} strokeWidth={2.25} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="services__arrow services__arrow--next"
+              aria-label="Próximas soluções"
+              disabled={!canNext}
+              onClick={() => scrollByCard(1)}
+            >
+              <ChevronRight size={28} strokeWidth={2.25} aria-hidden />
+            </button>
+          </div>
+          )}
+        </Reveal>
+      </div>
+
+      <div className="sr-only">
+        {visibleServices.map((service) => (
+          <article key={`seo-${service.id}`} id={service.id}>
+            <h3>{service.name}</h3>
+            <p>{service.tagline}</p>
+            <p>{service.summary}</p>
+            {service.description.map((p) => (
+              <p key={p.slice(0, 20)}>{p}</p>
+            ))}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ServiceCard({
+  service,
+  expanded,
+  panelId,
+  onToggle,
+}: {
+  service: Service;
+  expanded: boolean;
+  panelId: string;
+  onToggle: () => void;
+}) {
+  const detail = service.description.join(" ");
+  const stamped = isImagenowStamp(service.badges);
+  const otherBadges =
+    service.badges?.filter((b) => !/(desenvolvido|criado) pela imagenow/i.test(b)) ?? [];
+
+  const detailRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const readyRef = useRef(false);
+  const reduced = useReducedMotion();
+  const [mediaFailed, setMediaFailed] = useState(false);
+
+  useEffect(() => {
+    setMediaFailed(false);
+  }, [service.image, service.video]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    void video.play().catch(() => undefined);
+  }, [service.video]);
+
+  useGSAP(
+    () => {
+      const panel = detailRef.current;
+      const inner = innerRef.current;
+      if (!panel || !inner) return;
+
+      gsap.killTweensOf([panel, inner]);
+
+      if (reduced) {
+        gsap.set(panel, {
+          height: expanded ? "auto" : 0,
+          opacity: expanded ? 1 : 0,
+          overflow: "hidden",
+        });
+        gsap.set(inner, { y: 0, opacity: expanded ? 1 : 0 });
+        readyRef.current = true;
+        return;
+      }
+
+      if (!readyRef.current) {
+        gsap.set(panel, {
+          height: expanded ? "auto" : 0,
+          opacity: expanded ? 1 : 0,
+          overflow: "hidden",
+        });
+        gsap.set(inner, { y: 0, opacity: expanded ? 1 : 0 });
+        readyRef.current = true;
+        return;
+      }
+
+      if (expanded) {
+        gsap.set(panel, { height: "auto", opacity: 1, overflow: "hidden" });
+        const target = panel.scrollHeight;
+        gsap.fromTo(
+          panel,
+          { height: 0, opacity: 0.35 },
+          {
+            height: target,
+            opacity: 1,
+            duration: 0.62,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.set(panel, { height: "auto", overflow: "visible" });
+            },
+          },
+        );
+        gsap.fromTo(
+          inner,
+          { y: 14, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.55,
+            delay: 0.1,
+            ease: "power3.out",
+          },
+        );
+      } else {
+        const current = panel.scrollHeight;
+        gsap.set(panel, { height: current, overflow: "hidden" });
+        gsap.to(inner, {
+          y: 8,
+          opacity: 0,
+          duration: 0.28,
+          ease: "power2.in",
+        });
+        gsap.to(panel, {
+          height: 0,
+          opacity: 0,
+          duration: 0.48,
+          delay: 0.04,
+          ease: "power3.inOut",
+        });
+      }
+    },
+    { dependencies: [expanded, reduced] },
+  );
+
+  return (
+    <article
+      className={`service-card${expanded ? " is-expanded" : ""}${stamped ? " has-stamp" : ""}`}
+      aria-labelledby={`${panelId}-title`}
+    >
+      <figure className="service-card__bg" aria-hidden="true">
+        {service.developing || mediaFailed ? null : service.video ? (
+          <video
+            ref={videoRef}
+            className="service-card__video"
+            src={service.video}
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="metadata"
+            onError={() => setMediaFailed(true)}
+          />
+        ) : (
+          <img
+            src={service.image}
+            alt=""
+            width={640}
+            height={800}
+            loading="lazy"
+            decoding="async"
+            onError={() => setMediaFailed(true)}
+            style={
+              service.imagePosition
+                ? { objectPosition: service.imagePosition }
+                : undefined
+            }
+          />
+        )}
+      </figure>
+      <div className="service-card__scrim" aria-hidden="true" />
+
+      {service.developing ? (
+        <p className="service-card__developing">
+          <span>Em</span>
+          <span>desenvolvimento</span>
+        </p>
+      ) : null}
+
+      {stamped ? (
+        <img
+          src="/images/carimbo.png"
+          alt="Criado pela Imagenow"
+          width={140}
+          height={140}
+          className="service-card__stamp"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : null}
+
+      <div className="service-card__main">
+        <div className="service-card__summary-wrap">
+          <p className="service-card__summary">{service.summary}</p>
+        </div>
+
+        {otherBadges.length ? (
+          <ul className="service-card__badges">
+            {otherBadges.map((badge) => (
+              <li
+                key={badge}
+                className={
+                  /desenvolvimento/i.test(badge)
+                    ? "service-card__badge service-card__badge--muted"
+                    : "service-card__badge"
+                }
+              >
+                {badge}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        <h3 id={`${panelId}-title`} className="font-display service-card__name">
+          {service.name}
+        </h3>
+
+        <div className="service-card__actions">
+          <button
+            type="button"
+            className="service-card__expand"
+            aria-expanded={expanded}
+            aria-controls={panelId}
+            onClick={onToggle}
+          >
+            Ver {expanded ? "menos" : "mais"}{" "}
+            <span aria-hidden="true">{expanded ? "×" : "+"}</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id={panelId}
+        ref={detailRef}
+        className="service-card__detail"
+        role="region"
+        aria-hidden={!expanded}
+        aria-label={`Detalhes de ${service.name}`}
+      >
+        <div ref={innerRef} className="service-card__detail-inner">
+          {detail ? <p>{detail}</p> : null}
+          <a
+            className="service-card__cta"
+            href={createWhatsAppUrl(service.whatsappMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={expanded ? undefined : -1}
+          >
+            Conversar sobre este serviço
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
