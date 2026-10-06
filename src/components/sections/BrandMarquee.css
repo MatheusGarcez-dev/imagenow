@@ -26,23 +26,27 @@
   display: flex;
   align-items: center;
   width: max-content;
-  gap: clamp(3.5rem, 7vw, 5.5rem);
   margin: 0;
   padding: 0.55rem 0;
   list-style: none;
   animation: brand-marquee-left var(--marquee-duration) linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .brand-marquee--right .brand-marquee__track {
   animation-name: brand-marquee-right;
 }
 
+/* Espaçamento no item (não gap) para as duas metades medirem exatamente 50%
+   e a emenda do loop não pular. */
 .brand-marquee__item {
+  --marquee-gap: clamp(3.5rem, 7vw, 5.5rem);
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 0 var(--marquee-gap) 0 0;
   background: none;
   border: 0;
 }
@@ -62,9 +66,15 @@
     transform 0.35s var(--ease);
 }
 
-.brand-marquee__item:hover .brand-marquee__logo {
-  opacity: 1;
-  transform: scale(1.06);
+@media (hover: hover) {
+  .brand-marquee__item:hover .brand-marquee__logo {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+
+  .brand-marquee:hover .brand-marquee__track {
+    animation-play-state: paused;
+  }
 }
 
 .brand-marquee__logo.is-stellantis {
@@ -81,31 +91,27 @@
   white-space: nowrap;
 }
 
-.brand-marquee:hover .brand-marquee__track {
-  animation-play-state: paused;
-}
-
 @keyframes brand-marquee-left {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 @keyframes brand-marquee-right {
   from {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
   to {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @media (max-width: 640px) {
-  .brand-marquee__track {
-    gap: 2.75rem;
+  .brand-marquee__item {
+    --marquee-gap: 2.75rem;
   }
 
   .brand-marquee__logo {
@@ -131,6 +137,10 @@
     width: 100%;
     justify-content: flex-start;
     row-gap: 1.75rem;
+  }
+
+  .brand-marquee__item[aria-hidden="true"] {
+    display: none;
   }
 
   .brand-marquee__item:hover .brand-marquee__logo {

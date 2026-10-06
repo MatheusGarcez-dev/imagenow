@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { visibleServices, type Service } from "@/data/services";
+import { createServiceSearch, normalizeSearch } from "@/lib/serviceSearch";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { Reveal } from "@/components/ui/Reveal";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -14,25 +15,7 @@ function isImagenowStamp(badges?: string[]) {
   return Boolean(badges?.some((b) => /(desenvolvido|criado) pela imagenow/i.test(b)));
 }
 
-function normalizeSearch(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
-
-function serviceMatchesQuery(service: Service, query: string) {
-  const haystack = normalizeSearch(
-    [
-      service.name,
-      service.tagline,
-      service.summary,
-      ...(service.keywords ?? []),
-      ...(service.badges ?? []),
-    ].join(" "),
-  );
-  return haystack.includes(query);
-}
+const searchServices = createServiceSearch(visibleServices);
 
 export function ServicesCarousel() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -43,13 +26,10 @@ export function ServicesCarousel() {
   const panelId = useId();
   const searchId = useId();
 
-  const normalizedQuery = normalizeSearch(query.trim());
-  const filteredServices = useMemo(
-    () =>
-      normalizedQuery
-        ? visibleServices.filter((service) => serviceMatchesQuery(service, normalizedQuery))
-        : visibleServices,
-    [normalizedQuery],
+  const normalizedQuery = normalizeSearch(query);
+  const { services: filteredServices, intents: matchedIntents } = useMemo(
+    () => searchServices(query),
+    [query],
   );
 
   const updateArrows = useCallback(() => {
@@ -66,6 +46,8 @@ export function ServicesCarousel() {
     }
   }, [expanded, filteredServices]);
 
+  const hasResults = filteredServices.length > 0;
+
   useEffect(() => {
     const el = trackRef.current;
     if (!el) {
@@ -73,7 +55,6 @@ export function ServicesCarousel() {
       setCanNext(false);
       return;
     }
-    el.scrollLeft = 0;
     updateArrows();
     el.addEventListener("scroll", updateArrows, { passive: true });
     window.addEventListener("resize", updateArrows);
@@ -81,7 +62,15 @@ export function ServicesCarousel() {
       el.removeEventListener("scroll", updateArrows);
       window.removeEventListener("resize", updateArrows);
     };
-  }, [updateArrows, expanded, normalizedQuery, filteredServices.length]);
+  }, [updateArrows, hasResults]);
+
+  // Volta ao início só quando a busca muda; abrir/fechar um card mantém a posição.
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollLeft = 0;
+    updateArrows();
+  }, [updateArrows, normalizedQuery]);
 
   const scrollByCard = (direction: -1 | 1) => {
     const el = trackRef.current;
@@ -119,7 +108,7 @@ export function ServicesCarousel() {
               id={searchId}
               type="search"
               className="services__search-input"
-              placeholder="Buscar equipamento"
+              placeholder="Ex.: foto impressa para casamento"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               autoComplete="off"
@@ -136,6 +125,18 @@ export function ServicesCarousel() {
               </button>
             ) : null}
           </div>
+
+          {matchedIntents.length && filteredServices.length ? (
+            <p className="services__intent" role="status">
+              Mais relevantes para{" "}
+              {matchedIntents.map((label, index) => (
+                <span key={label}>
+                  {index ? " + " : null}
+                  <strong>{label}</strong>
+                </span>
+              ))}
+            </p>
+          ) : null}
 
           {filteredServices.length === 0 ? (
             <p className="services__empty" role="status">
@@ -356,10 +357,10 @@ function ServiceCard({
 
       {stamped ? (
         <img
-          src="/images/carimbo.png"
-          alt="Criado pela Imagenow"
-          width={140}
-          height={140}
+          src="/images/carimbo-v2.png"
+          alt="Desenvolvido pela Imagenow"
+          width={600}
+          height={482}
           className="service-card__stamp"
           loading="lazy"
           decoding="async"

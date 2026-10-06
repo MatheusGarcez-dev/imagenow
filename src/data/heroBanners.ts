@@ -11,8 +11,8 @@ export type HeroBanner = {
 export const heroBanners: HeroBanner[] = [
   {
     id: "banner-1",
-    src: "/images/banner-1-hero.png",
-    alt: "Convidadas em evento com fotos impressas e atmosfera Imagenow",
+    src: "/images/banner-1-hero-v2.png",
+    alt: "Convidadas sorrindo e mostrando fotos impressas da Imagenow em eventos",
     position: "center center",
     title: "Quando o evento termina,",
     titleAccent: "a lembrança continua.",

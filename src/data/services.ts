@@ -84,6 +84,24 @@ export const services: Service[] = [
     accent: "pink",
   },
   {
+    id: "twister",
+    name: "Twister | Cabine de Vento",
+    tagline: "O vento vira desafio.",
+    summary:
+      "Desafio de captura que transforma o vento em uma dinâmica rápida, divertida e competitiva.",
+    description: [
+      "Criado para ações que pedem interação e movimento, o Twister coloca o público dentro de uma cabine de vento onde cada participante precisa capturar os elementos que estão em circulação.",
+      "A dinâmica pode ser adaptada com brindes, vouchers ou outros materiais definidos para a ação, criando uma disputa simples de entender e rápida de realizar.",
+      "Indicado para eventos corporativos, feiras, ativações de marca, convenções e ações promocionais.",
+    ],
+    image: "/images/services/twister.mp4",
+    imageAlt: "Participante dentro da cabine de vento Twister capturando elementos em circulação",
+    video: "/images/services/twister.mp4",
+    whatsappMessage:
+      "Olá! Gostaria de conversar sobre o Twister | Cabine de Vento para um evento.",
+    accent: "orange",
+  },
+  {
     id: "selfiemobi-2",
     name: "SelfieMobi 2",
     tagline: "Mais controle. Mesma qualidade.",
@@ -345,21 +363,12 @@ export const services: Service[] = [
 
 export const visibleServices = services.filter((service) => !service.hidden);
 
-export type PhotoFormatLayout =
-  | "strips"
-  | "strips-slim"
-  | "polaroid"
-  | "polaroid-slim"
-  | "mini-polaroid"
-  | "sheet-3"
-  | "sheet-1"
-  | "sheet-4";
-
 export type PhotoFormat = {
   id: string;
   name: string;
   detail: string;
-  layout: PhotoFormatLayout;
+  /** Imagem do formato impresso (PNG/WebP com fundo transparente) */
+  image: string;
   preferred?: boolean;
 };
 
@@ -368,51 +377,51 @@ export const photoFormats: PhotoFormat[] = [
     id: "tirinhas",
     name: "Tirinhas",
     detail: "O clássico do totem. Várias poses na mesma tira.",
-    layout: "strips",
+    image: "/images/formatos/tirinhas.webp",
     preferred: true,
   },
   {
     id: "polaroid",
     name: "Polaroid",
     detail: "Foto única com a borda branca que vira lembrança.",
-    layout: "polaroid",
+    image: "/images/formatos/polaroid.webp",
     preferred: true,
   },
   {
     id: "tirinhas-slim",
     name: "Tirinhas Slim",
     detail: "Mais estreita, cabe fácil no bolso e no convite.",
-    layout: "strips-slim",
+    image: "/images/formatos/tirinhas-slim.webp",
   },
   {
     id: "mini-polaroid",
     name: "Mini Polaroid 7x5",
     detail: "Quatro poses pequenas em uma folha só.",
-    layout: "mini-polaroid",
+    image: "/images/formatos/mini-polaroid.webp",
   },
   {
     id: "polaroid-slim",
     name: "Polaroid Slim",
     detail: "O recorte polaroid em um formato mais fino.",
-    layout: "polaroid-slim",
+    image: "/images/formatos/polaroid-slim.webp",
   },
   {
     id: "sheet-3",
     name: "10x15, 3 poses",
     detail: "Uma foto maior e duas menores no mesmo papel.",
-    layout: "sheet-3",
+    image: "/images/formatos/sheet-3.webp",
   },
   {
     id: "sheet-1",
     name: "10x15, 1 pose",
     detail: "Uma foto em tamanho cheio para guardar ou emoldurar.",
-    layout: "sheet-1",
+    image: "/images/formatos/sheet-1.webp",
   },
   {
     id: "sheet-4",
     name: "10x15, 4 poses",
     detail: "Quatro recortes iguais na folha 10x15.",
-    layout: "sheet-4",
+    image: "/images/formatos/sheet-4.webp",
   },
 ];
 
@@ -441,8 +450,8 @@ export const contexts = [
     id: "celebracoes-sociais",
     title: "Celebrações sociais",
     text: "Para casamentos, aniversários e festas. Registros impressos, digitais e interativos que envolvem os convidados e seguem como lembrança depois do evento.",
-    image: "/images/card-celebracoes-sociais.jpg",
-    imageAlt: "Convidadas em celebração social segurando fotos impressas da Imagenow",
+    image: "/images/card-celebracoes-sociais-v2.jpeg",
+    imageAlt: "Noiva e amigas com óculos divertidos fazendo careta na festa de casamento",
     tone: "social" as const,
     whatsappMessage:
       "Olá! Gostaria de conversar sobre soluções da Imagenow para uma celebração social.",

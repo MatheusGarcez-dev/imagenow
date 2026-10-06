@@ -13,15 +13,19 @@ function BrandMark({ brand, isClone }: { brand: BrandName; isClone: boolean }) {
     );
   }
 
+  // Dimensões reais dos PNGs: o espaço fica reservado antes de carregar,
+  // então a trilha não muda de largura no meio da animação.
+  const isStellantis = brand === "Stellantis";
+
   return (
     <img
       src={brandLogo(brand)}
       alt={isClone ? "" : brandAlt(brand)}
-      width={480}
-      height={192}
-      loading="lazy"
+      width={isStellantis ? 407 : 500}
+      height={isStellantis ? 138 : 500}
+      loading="eager"
       decoding="async"
-      className={`brand-marquee__logo${brand === "Stellantis" ? " is-stellantis" : ""}`}
+      className={`brand-marquee__logo${isStellantis ? " is-stellantis" : ""}`}
       onError={() => setFailed(true)}
     />
   );
