@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Images } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { contexts } from "@/data/services";
 import { Reveal } from "@/components/ui/Reveal";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -63,7 +63,7 @@ export function ContextCardsSection() {
       <div className="wrap">
         <Reveal variant="fade-up" className="contexts__header">
           <h2 id="contexts-title" className="font-display section-heading contexts__title">
-            <span className="title-accent">Experiências</span> para diferentes contextos
+            <span className="title-accent">Soluções</span> para cada tipo de projeto.
           </h2>
         </Reveal>
       </div>
@@ -121,9 +121,6 @@ export function ContextCardsSection() {
             <div className="contexts-carousel__scrim" aria-hidden="true" />
             <div className="contexts-carousel__copy">
               <div className="contexts-carousel__title-row">
-                <span className="contexts-carousel__icon" aria-hidden="true">
-                  <Images size={16} strokeWidth={2} />
-                </span>
                 <h3 id={labelId} className="font-display contexts-carousel__title">
                   {current.title}
                 </h3>

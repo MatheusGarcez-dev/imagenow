@@ -4,32 +4,24 @@
 }
 
 .about-page__hero {
-  background: var(--ink);
+  /* Película escura à esquerda para o texto branco ler bem sobre o degradê */
+  background:
+    linear-gradient(90deg, rgba(8, 8, 8, 0.55) 0%, rgba(8, 8, 8, 0.25) 55%, rgba(8, 8, 8, 0.05) 100%),
+    url("/images/about-hero-bg.webp") center / cover no-repeat,
+    var(--ink);
   color: var(--paper);
   padding: clamp(7rem, 14vw, 9rem) 0 3.5rem;
 }
 
-.about-page__crumbs {
-  display: flex;
-  gap: 0.55rem;
-  align-items: center;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.about-page__crumbs a:hover {
-  color: #fff;
-}
-
 .about-page__hero h1 {
-  margin: 1.5rem 0 0;
+  margin: 0;
   font-size: clamp(2.6rem, 7vw, 4.5rem);
 }
 
 .about-page__subtitle {
   margin: 0.75rem 0 0;
   font-size: 1.2rem;
-  color: rgba(245, 244, 240, 0.7);
+  color: rgba(245, 244, 240, 0.88);
 }
 
 .about-page__layout {

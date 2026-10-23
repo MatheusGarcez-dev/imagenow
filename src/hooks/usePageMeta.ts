@@ -13,7 +13,7 @@ export function usePageMeta({
   title,
   description,
   path = "/",
-  image = `${SITE}/images/hero-bg.png`,
+  image = `${SITE}/images/og-cover.jpg`,
 }: MetaProps) {
   useEffect(() => {
     document.title = title;

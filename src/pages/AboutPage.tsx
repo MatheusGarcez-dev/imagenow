@@ -3,6 +3,7 @@ import { aboutContent } from "@/data/content";
 import { messages } from "@/data/site";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { WhatsAppIcon } from "@/components/common/WhatsAppIcon";
 import { Reveal, RevealStagger } from "@/components/ui/Reveal";
 import { JsonLd } from "@/components/common/JsonLd";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -29,11 +30,6 @@ export function AboutPage() {
         <header className="about-page__hero">
           <div className="wrap">
             <Reveal variant="fade-blur" duration={1.1}>
-              <nav className="about-page__crumbs" aria-label="Breadcrumb">
-                <Link to="/">Home</Link>
-                <span aria-hidden="true">/</span>
-                <span>Quem somos</span>
-              </nav>
               <h1 className="font-display">{aboutContent.h1}</h1>
               <p className="about-page__subtitle">{aboutContent.subtitle}</p>
             </Reveal>
@@ -112,8 +108,9 @@ export function AboutPage() {
               <AnimatedButton
                 href={createWhatsAppUrl(messages.proposta)}
                 external
-                variant="dark"
+                variant="whatsapp"
                 aria-label="Solicitar proposta pelo WhatsApp"
+                icon={<WhatsAppIcon className="btn-animated__whatsapp" />}
               >
                 Solicitar proposta
               </AnimatedButton>

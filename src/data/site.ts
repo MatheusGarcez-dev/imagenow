@@ -6,11 +6,10 @@ export const siteConfig = {
   url: import.meta.env.VITE_SITE_URL ?? "https://imagenow.com.br",
   email: import.meta.env.VITE_EMAIL ?? "contato@imagenow.com.br",
   city: "São Paulo, SP",
-  whatsapp: import.meta.env.VITE_WHATSAPP ?? "5511999999999",
+  whatsapp: import.meta.env.VITE_WHATSAPP ?? "5511985304672",
   social: {
-    linkedin: "https://linkedin.com/company/imagenow",
-    instagram: "https://instagram.com/imagenow",
-    facebook: "https://facebook.com/imagenow",
+    linkedin: "https://www.linkedin.com/company/imagenow/",
+    instagram: "https://www.instagram.com/imagenowbr/",
   },
 } as const;
 
@@ -28,7 +27,7 @@ export const messages = {
 export const navLinks = [
   { label: "Soluções", href: "/#solucoes" },
   { label: "Quem somos", href: "/quem-somos" },
-  { label: "Galerias", href: "/galerias" },
+  { label: "Acessar suas fotos", href: "/galerias" },
   { label: "Parcerias", href: "/parcerias" },
   { label: "Contato", href: "/#contato" },
 ] as const;

@@ -35,6 +35,8 @@ export const brands = [
   "Alphaquip",
   "Rotary",
   "Braschemical",
+  "General Motors",
+  "General Electric",
 ] as const;
 
 export type BrandName = (typeof brands)[number];
@@ -81,6 +83,8 @@ const logoFileByBrand: Record<BrandName, number | null> = {
   Alphaquip: 32,
   Rotary: 33,
   Braschemical: 34,
+  "General Motors": 36,
+  "General Electric": 37,
 };
 
 export const visibleBrands = brands.filter(
@@ -94,7 +98,7 @@ export function brandLogo(brand: BrandName) {
 
 export function brandAlt(name: string) {
   const isEmpresa =
-    /banco|caixa|dasa|gafisa|eztec|worldpay|rotary|stellantis|saint|dexco|fibra|cubo|objetivo|paul|bradesco|iguatemi|mpd/i.test(
+    /banco|caixa|dasa|gafisa|eztec|worldpay|rotary|stellantis|saint|dexco|fibra|cubo|objetivo|paul|bradesco|iguatemi|mpd|general/i.test(
       name,
     );
   return `${name} - ${isEmpresa ? "empresa" : "marca"} atendida pela Imagenow`;

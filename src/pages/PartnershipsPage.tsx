@@ -28,11 +28,6 @@ export function PartnershipsPage() {
         <header className="about-page__hero">
           <div className="wrap">
             <Reveal variant="fade-blur" duration={1.1}>
-              <nav className="about-page__crumbs" aria-label="Breadcrumb">
-                <Link to="/">Home</Link>
-                <span aria-hidden="true">/</span>
-                <span>Parcerias</span>
-              </nav>
               <h1 className="font-display">{partnershipsContent.h1}</h1>
               <p className="about-page__subtitle">{partnershipsContent.subtitle}</p>
             </Reveal>
@@ -120,7 +115,7 @@ export function PartnershipsPage() {
               <AnimatedButton
                 href={createWhatsAppUrl(messages.parceria)}
                 external
-                variant="dark"
+                variant="whatsapp"
                 aria-label="Conversar sobre parceria pelo WhatsApp"
               >
                 Conversar sobre parceria

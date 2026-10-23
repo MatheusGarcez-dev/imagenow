@@ -96,7 +96,7 @@ export function FAQSection() {
           <AnimatedButton
             href={createWhatsAppUrl(messages.duvidas)}
             external
-            variant="outline"
+            variant="whatsapp"
             aria-label="Falar com a Imagenow no WhatsApp sobre dúvidas"
           >
             Ainda tem dúvidas? Fale com a Imagenow

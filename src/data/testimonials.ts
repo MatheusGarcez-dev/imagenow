@@ -12,11 +12,16 @@ export const googleReviewsUrl =
 
 export const casamentosReviewsUrl = "https://cutt.ly/xkN1dSw";
 
-export const googleRatingSummary = {
-  rating: 5.0,
-  /** Texto de vitrine — “100+ avaliações” */
-  countLabel: "100+",
-} as const;
+/** Notas por plataforma. `count` é exibido como “100+”; o total soma as plataformas. */
+export const ratingSources = [
+  { id: "google", name: "Google", rating: 5.0, count: 100 },
+  { id: "casamentos", name: "Casamentos.com.br", rating: 5.0, count: 90 },
+] as const;
+
+export const ratingSummary = {
+  rating: Math.min(...ratingSources.map((source) => source.rating)),
+  count: ratingSources.reduce((total, source) => total + source.count, 0),
+};
 
 export const testimonials: Testimonial[] = [
   {

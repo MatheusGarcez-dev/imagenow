@@ -51,13 +51,24 @@
 
 .final-cta__card h2 {
   margin: 0;
-  max-width: 22ch;
+  min-width: 0;
   font-size: clamp(1.2rem, 2.4vw, 1.65rem);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
 
 .final-cta__card h2 .title-accent {
   color: #fff200;
+}
+
+/* Título em uma linha só ao lado do botão; no celular ele fica acima do botão e pode quebrar */
+@media (min-width: 701px) {
+  .final-cta__card h2 {
+    white-space: nowrap;
+  }
+
+  .final-cta__card .btn-animated {
+    flex-shrink: 0;
+  }
 }
 
 @media (max-width: 700px) {

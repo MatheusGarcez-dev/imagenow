@@ -162,16 +162,21 @@ export function HeroSection() {
         <div className="hero__slides" ref={slidesRef} aria-hidden="true">
           {heroBanners.map((banner, index) => (
             <div key={banner.id} className="hero__slide">
-              <img
-                src={banner.src}
-                alt=""
-                width={1920}
-                height={1080}
-                fetchPriority={index === 0 ? "high" : "low"}
-                decoding="async"
-                loading={index === 0 ? "eager" : "lazy"}
-                style={{ objectPosition: banner.position ?? "center center" }}
-              />
+              <picture>
+                {banner.srcMobile ? (
+                  <source media="(max-width: 767px)" srcSet={banner.srcMobile} />
+                ) : null}
+                <img
+                  src={banner.src}
+                  alt=""
+                  width={1920}
+                  height={1080}
+                  fetchPriority={index === 0 ? "high" : "low"}
+                  decoding="async"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  style={{ objectPosition: banner.position ?? "center center" }}
+                />
+              </picture>
             </div>
           ))}
         </div>

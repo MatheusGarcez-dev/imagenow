@@ -16,7 +16,7 @@ type AnimatedButtonProps = {
   external?: boolean;
   onClick?: MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
   className?: string;
-  variant?: "primary" | "dark" | "outline" | "ghost" | "compact" | "icon";
+  variant?: "primary" | "dark" | "outline" | "ghost" | "compact" | "icon" | "whatsapp";
   type?: "button" | "submit";
 };
 

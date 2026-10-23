@@ -9,7 +9,7 @@ export type Service = {
   imageAlt: string;
   /** Enquadramento da foto no card (object-position) */
   imagePosition?: string;
-  /** Vídeo exibido no card expandido (substitui a imagem quando presente) */
+  /** Vídeo do card (H.264/MP4); `image` vira o poster exibido enquanto carrega ou se falhar */
   video?: string;
   whatsappMessage: string;
   keywords?: string[];
@@ -59,7 +59,7 @@ export const services: Service[] = [
       "Com iluminação adequada e operação orientada, o resultado é um conteúdo de forte apelo visual, pronto para ser compartilhado logo após a captura.",
       "Indicado para eventos, festas e ações de marca que buscam impacto, movimento e presença digital.",
     ],
-    image: "/images/services/plataforma-360.mp4",
+    image: "/images/services/plataforma-360-poster.jpg",
     imageAlt: "Plataforma 360 da Imagenow criando vídeo em evento",
     video: "/images/services/plataforma-360.mp4",
     whatsappMessage: "Olá! Gostaria de conversar sobre a Plataforma 360 para um evento.",
@@ -94,7 +94,7 @@ export const services: Service[] = [
       "A dinâmica pode ser adaptada com brindes, vouchers ou outros materiais definidos para a ação, criando uma disputa simples de entender e rápida de realizar.",
       "Indicado para eventos corporativos, feiras, ativações de marca, convenções e ações promocionais.",
     ],
-    image: "/images/services/twister.mp4",
+    image: "/images/services/twister-poster.jpg",
     imageAlt: "Participante dentro da cabine de vento Twister capturando elementos em circulação",
     video: "/images/services/twister.mp4",
     whatsappMessage:
@@ -181,9 +181,9 @@ export const services: Service[] = [
       "A entrega pode incluir efeitos, cortes, câmera lenta, aceleração e elementos gráficos, criando um material pronto para circular em redes sociais ou canais digitais.",
       "Indicado para lançamentos, ações promocionais, ativações de marca e eventos que querem gerar conteúdo ágil.",
     ],
-    image: "/images/services/reelsclip.mov",
+    image: "/images/services/reelsclip-poster.jpg",
     imageAlt: "ReelsClip da Imagenow com vídeo curto personalizado para evento",
-    video: "/images/services/reelsclip.mov",
+    video: "/images/services/reelsclip.mp4",
     whatsappMessage: "Olá! Gostaria de conversar sobre o ReelsClip para um evento.",
     accent: "orange",
   },
@@ -240,9 +240,9 @@ export const services: Service[] = [
       "Indicado principalmente para casamentos, aniversários, festas intimistas e celebrações que pedem um registro físico mais afetivo.",
     ],
     badges: ["Desenvolvido pela Imagenow"],
-    image: "/images/WhatsApp Video 2026-09-23 at 15.37.00.mp4",
+    image: "/images/services/pola-poster.jpg",
     imageAlt: "Registro Pola da Imagenow em celebração, com fotos instantâneas.",
-    video: "/images/WhatsApp Video 2026-09-23 at 15.37.00.mp4",
+    video: "/images/services/pola.mp4",
     whatsappMessage: "Olá! Gostaria de conversar sobre o Pola para um evento.",
     accent: "pink",
   },
@@ -381,11 +381,10 @@ export const photoFormats: PhotoFormat[] = [
     preferred: true,
   },
   {
-    id: "polaroid",
-    name: "Polaroid",
-    detail: "Foto única com a borda branca que vira lembrança.",
-    image: "/images/formatos/polaroid.webp",
-    preferred: true,
+    id: "sheet-1",
+    name: "10x15, 1 pose",
+    detail: "Uma foto em tamanho cheio para guardar ou emoldurar.",
+    image: "/images/formatos/sheet-1.webp",
   },
   {
     id: "tirinhas-slim",
@@ -412,10 +411,11 @@ export const photoFormats: PhotoFormat[] = [
     image: "/images/formatos/sheet-3.webp",
   },
   {
-    id: "sheet-1",
-    name: "10x15, 1 pose",
-    detail: "Uma foto em tamanho cheio para guardar ou emoldurar.",
-    image: "/images/formatos/sheet-1.webp",
+    id: "polaroid",
+    name: "Polaroid",
+    detail: "Foto única com a borda branca que vira lembrança.",
+    image: "/images/formatos/polaroid.webp",
+    preferred: true,
   },
   {
     id: "sheet-4",

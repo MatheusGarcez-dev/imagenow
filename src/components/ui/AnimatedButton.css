@@ -65,6 +65,12 @@
   justify-content: center;
 }
 
+/* O logo do WhatsApp ocupa a caixa toda; um pouco menor fica do mesmo peso da seta padrão */
+.btn-animated__icon-slot svg.btn-animated__whatsapp {
+  width: 20px;
+  height: 20px;
+}
+
 .btn-animated:hover {
   transform: scale(1.05);
   border-color: #fff9;
@@ -98,6 +104,16 @@
   background-color: var(--ink);
   color: #fff;
   border-color: #ffffff33;
+}
+
+.btn-animated--whatsapp {
+  background-color: var(--whatsapp);
+  color: #fff;
+  border-color: #ffffff4d;
+}
+
+.btn-animated--whatsapp:hover {
+  background-color: var(--whatsapp-hover);
 }
 
 .btn-animated--outline {

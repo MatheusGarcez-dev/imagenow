@@ -1,21 +1,30 @@
 import { Star } from "lucide-react";
 import {
   casamentosReviewsUrl,
-  googleRatingSummary,
   googleReviewsUrl,
+  ratingSources,
+  ratingSummary,
   testimonials,
 } from "@/data/testimonials";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { Reveal } from "@/components/ui/Reveal";
 import "./SocialProofSection.css";
 
-function RatingStars({ rating, label }: { rating: number; label: string }) {
+function RatingStars({
+  rating,
+  label,
+  size = 15,
+}: {
+  rating: number;
+  label?: string;
+  size?: number;
+}) {
   return (
     <div className="feedback-marquee__stars" aria-label={label}>
       {Array.from({ length: 5 }, (_, index) => (
         <Star
           key={index}
-          size={15}
+          size={size}
           strokeWidth={0}
           className={index < rating ? "is-filled" : "is-empty"}
           aria-hidden
@@ -32,10 +41,28 @@ export function SocialProofSection() {
     <section className="social-proof" aria-labelledby="social-proof-title">
       <div className="wrap social-proof__layout">
         <Reveal variant="fade-blur" className="social-proof__header">
-          <p className="social-proof__rating" aria-label="5.0 no Google, mais de 100 avaliações">
-            ⭐ {googleRatingSummary.rating.toFixed(1)} no Google •{" "}
-            {googleRatingSummary.countLabel} avaliações
-          </p>
+          <div
+            className="social-proof__score"
+            role="group"
+            aria-label={`Nota ${ratingSummary.rating.toFixed(1)} de 5, com mais de ${ratingSummary.count} avaliações no ${ratingSources.map((source) => source.name).join(" e no ")}`}
+          >
+            <div className="social-proof__score-head" aria-hidden="true">
+              <RatingStars rating={Math.round(ratingSummary.rating)} size={18} />
+              <span className="social-proof__score-value">
+                {ratingSummary.rating.toFixed(1)}
+              </span>
+              <span className="social-proof__score-total">
+                {ratingSummary.count}+ avaliações
+              </span>
+            </div>
+            <ul className="social-proof__sources" aria-hidden="true">
+              {ratingSources.map((source) => (
+                <li key={source.id}>
+                  <span className="social-proof__source-name">{source.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
           <h2 id="social-proof-title" className="font-display section-heading">
             <span className="title-accent">Confiança</span> construída em eventos reais
           </h2>

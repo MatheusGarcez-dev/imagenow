@@ -61,6 +61,16 @@
   filter: drop-shadow(0 0.9rem 1.4rem rgba(0, 0, 0, 0.45));
 }
 
+.photo-formats__item--sheet-3 {
+  container-type: inline-size;
+  /* com contenção de largura o item encolheria a 0 se ficasse centralizado */
+  justify-self: stretch;
+}
+
+/* 10x15 3 poses: mesma altura da Polaroid Slim ao lado (640x407, ~0,636 da largura) */
+.photo-formats__item--sheet-3 .photo-formats__img {
+  max-height: min(100%, 63.6cqi);
+}
 .photo-formats__label {
   margin: 0;
   text-align: center;

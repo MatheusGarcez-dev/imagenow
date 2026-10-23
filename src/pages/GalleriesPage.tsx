@@ -111,18 +111,13 @@ export function GalleriesPage() {
   return (
     <>
       <JsonLd
-        data={[breadcrumbJsonLd([{ name: "Galerias", path: "/galerias" }])]}
+        data={[breadcrumbJsonLd([{ name: "Acessar suas fotos", path: "/galerias" }])]}
       />
 
       <article className="galleries-page">
         <header className="galleries-page__hero">
           <div className="wrap">
             <Reveal variant="fade-blur" duration={1.1}>
-              <nav className="galleries-page__crumbs" aria-label="Breadcrumb">
-                <Link to="/">Home</Link>
-                <span aria-hidden="true">/</span>
-                <span>Fotos</span>
-              </nav>
               <h1 className="font-display">Fotos do seu evento</h1>
               <p className="galleries-page__lead">
                 Acesse as fotos do evento usando a data e a senha fornecida pela Imagenow.

@@ -224,6 +224,21 @@
     filter 0.6s ease;
 }
 
+/* O poster (img) fica sempre por baixo; o vídeo só aparece quando realmente está tocando */
+.service-card__bg .service-card__video {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition:
+    opacity 0.5s ease,
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.6s ease;
+}
+
+.service-card__bg .service-card__video.is-playing {
+  opacity: 1;
+}
+
 .service-card:hover .service-card__bg img,
 .service-card:hover .service-card__bg video,
 .service-card.is-expanded .service-card__bg img,
@@ -477,7 +492,7 @@
   min-height: 3rem;
   padding: 0.75rem 1rem;
   border-radius: 999px;
-  background: var(--magenta);
+  background: var(--whatsapp);
   color: #fff;
   font-size: 0.68rem;
   font-weight: 750;
@@ -488,7 +503,7 @@
 }
 
 .service-card__cta:hover {
-  background: color-mix(in srgb, var(--magenta) 88%, #000);
+  background: var(--whatsapp-hover);
   transform: translateY(-1px);
   filter: brightness(1.05);
 }

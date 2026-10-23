@@ -5,28 +5,17 @@
 }
 
 .galleries-page__hero {
+  /* Película escura à esquerda para o texto branco ler bem sobre o degradê */
   background:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(225, 29, 143, 0.22), transparent 55%),
-    radial-gradient(ellipse 50% 50% at 90% 20%, rgba(91, 23, 214, 0.2), transparent 50%),
+    linear-gradient(90deg, rgba(8, 8, 8, 0.55) 0%, rgba(8, 8, 8, 0.25) 55%, rgba(8, 8, 8, 0.05) 100%),
+    url("/images/galleries-hero-bg.webp") center / cover no-repeat,
     var(--ink);
   color: var(--paper);
   padding: clamp(7rem, 14vw, 9rem) 0 3.25rem;
 }
 
-.galleries-page__crumbs {
-  display: flex;
-  gap: 0.55rem;
-  align-items: center;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.galleries-page__crumbs a:hover {
-  color: #fff;
-}
-
 .galleries-page__hero h1 {
-  margin: 1.5rem 0 0;
+  margin: 0;
   font-size: clamp(2.2rem, 6vw, 3.75rem);
   max-width: 14ch;
 }
@@ -35,7 +24,7 @@
   margin: 1rem 0 0;
   max-width: 42ch;
   font-size: 1.1rem;
-  color: rgba(245, 244, 240, 0.72);
+  color: rgba(245, 244, 240, 0.88);
 }
 
 .galleries-page__availability {
@@ -43,7 +32,7 @@
   font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: rgba(255, 180, 222, 0.92);
+  color: #fff;
 }
 
 .galleries-page__fields {

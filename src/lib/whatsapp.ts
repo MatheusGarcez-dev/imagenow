@@ -3,5 +3,5 @@ export function createWhatsAppUrl(message: string, phone = siteWhatsApp()) {
 }
 
 function siteWhatsApp() {
-  return import.meta.env.VITE_WHATSAPP ?? "5511999999999";
+  return import.meta.env.VITE_WHATSAPP ?? "5511985304672";
 }

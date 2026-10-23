@@ -221,17 +221,46 @@ function ServiceCard({
   const videoRef = useRef<HTMLVideoElement>(null);
   const readyRef = useRef(false);
   const reduced = useReducedMotion();
-  const [mediaFailed, setMediaFailed] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   useEffect(() => {
-    setMediaFailed(false);
+    setImageFailed(false);
+    setVideoFailed(false);
+    setVideoPlaying(false);
   }, [service.image, service.video]);
 
+  // O vídeo só toca enquanto o card está visível: navegadores móveis limitam quantos
+  // vídeos decodificam ao mesmo tempo, e os excedentes ficavam pretos.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    void video.play().catch(() => undefined);
-  }, [service.video]);
+
+    // O React não reflete `muted` como atributo; sem isso o autoplay pode ser bloqueado.
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    const play = () => {
+      void video.play().catch(() => undefined);
+    };
+
+    if (typeof IntersectionObserver === "undefined") {
+      play();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) play();
+        else video.pause();
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [service.video, videoFailed]);
 
   useGSAP(
     () => {
@@ -317,32 +346,35 @@ function ServiceCard({
       aria-labelledby={`${panelId}-title`}
     >
       <figure className="service-card__bg" aria-hidden="true">
-        {service.developing || mediaFailed ? null : service.video ? (
-          <video
-            ref={videoRef}
-            className="service-card__video"
-            src={service.video}
-            muted
-            loop
-            playsInline
-            autoPlay
-            preload="metadata"
-            onError={() => setMediaFailed(true)}
-          />
-        ) : (
+        {service.developing || imageFailed ? null : (
           <img
             src={service.image}
             alt=""
             width={640}
             height={800}
-            loading="lazy"
+            loading="eager"
+            fetchPriority="low"
             decoding="async"
-            onError={() => setMediaFailed(true)}
+            onError={() => setImageFailed(true)}
             style={
               service.imagePosition
                 ? { objectPosition: service.imagePosition }
                 : undefined
             }
+          />
+        )}
+        {service.developing || !service.video || videoFailed ? null : (
+          <video
+            ref={videoRef}
+            className={`service-card__video${videoPlaying ? " is-playing" : ""}`}
+            src={service.video}
+            poster={service.image}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onPlaying={() => setVideoPlaying(true)}
+            onError={() => setVideoFailed(true)}
           />
         )}
       </figure>

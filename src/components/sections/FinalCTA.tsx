@@ -1,6 +1,7 @@
 import { messages } from "@/data/site";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { WhatsAppIcon } from "@/components/common/WhatsAppIcon";
 import { Reveal } from "@/components/ui/Reveal";
 import "./FinalCTA.css";
 
@@ -19,8 +20,9 @@ export function FinalCTA() {
             <AnimatedButton
               href={createWhatsAppUrl(messages.proposta)}
               external
-              variant="dark"
+              variant="whatsapp"
               aria-label="Solicitar proposta pelo WhatsApp"
+              icon={<WhatsAppIcon className="btn-animated__whatsapp" />}
             >
               Solicitar proposta
             </AnimatedButton>

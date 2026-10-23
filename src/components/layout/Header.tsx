@@ -4,6 +4,9 @@ import { navLinks } from "@/data/site";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import "./Header.css";
 
+// "Acessar suas fotos" (/galerias) fica só no rodapé, fora do menu principal.
+const headerLinks = navLinks.filter((link) => link.href !== "/galerias");
+
 function NavLink({
   href,
   label,
@@ -112,7 +115,7 @@ export function Header() {
           </Link>
 
           <nav className="site-header__nav" aria-label="Principal">
-            {navLinks.map((link) => (
+            {headerLinks.map((link) => (
               <NavLink key={link.href} href={link.href} label={link.label} />
             ))}
           </nav>
@@ -164,7 +167,7 @@ export function Header() {
           aria-label="Menu de navegação"
         >
           <nav className="mobile-menu__nav" aria-label="Mobile">
-            {navLinks.map((link) => (
+            {headerLinks.map((link) => (
               <NavLink
                 key={link.href}
                 href={link.href}
